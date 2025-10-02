@@ -25,7 +25,8 @@ interface OrderFormValue {
 @Component({
   selector: 'app-new-order',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CurrencyPipe],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, CurrencyPipe],
+
   templateUrl: './new-order.component.html',
   styleUrls: ['./new-order.component.css']
 })
