@@ -1,0 +1,60 @@
+{
+  "title": "WineInventory",
+  "sign-in": {
+    "title": "Iniciar Sesión",
+    "email": "Correo electrónico",
+    "email-required": "El correo electrónico es requerido",
+    "email-invalid": "Por favor ingresa un correo electrónico válido",
+    "password": "Contraseña",
+    "password-required": "La contraseña es requerida",
+    "password-minlength": "La contraseña debe tener al menos 6 caracteres",
+    "remember-me": "Recordar mi cuenta",
+    "forgot-password": "¿Olvidaste tu contraseña?",
+    "submit": "Iniciar Sesión",
+    "welcome-title": "¡Bienvenido de nuevo!",
+    "welcome-text": "Si aún no tienes una cuenta, regístrate para acceder a todas las funcionalidades.",
+    "register": "Registrarse"
+  },
+  "sign-up": {
+    "title": "Crear Cuenta",
+    "name": "Nombre Completo",
+    "name-required": "El nombre es requerido",
+    "email": "Correo electrónico",
+    "email-required": "El correo electrónico es requerido",
+    "email-invalid": "Por favor ingresa un correo electrónico válido",
+    "role": "Rol",
+    "role-required": "El rol es requerido",
+    "password": "Contraseña",
+    "password-required": "La contraseña es requerida",
+    "password-minlength": "La contraseña debe tener al menos 6 caracteres",
+    "confirm-password": "Confirmar Contraseña",
+    "confirm-password-required": "Por favor confirma tu contraseña",
+    "passwords-mismatch": "Las contraseñas no coinciden",
+    "accept-terms-1": "Acepto los",
+    "terms": "Términos de Servicio",
+    "accept-terms-2": "y la",
+    "privacy": "Política de Privacidad",
+    "accept-terms-required": "Debes aceptar los términos y condiciones",
+    "submit": "Registrarse",
+    "have-account": "¿Ya tienes una cuenta?",
+    "sign-in": "Iniciar Sesión",
+    "welcome-title": "¡Únete a Nosotros!"
+  },
+  "notFound": {
+    "title": "¡Uy! Página no encontrada.",
+    "description": "La página que buscas podría haber sido eliminada o no estar disponible temporalmente.",
+    "button": "Volver a la página principal"
+  },
+  "side-navbar": {
+  "title": "Menu principal",
+  "options": {
+    "dashboard": "Inicio",
+    "wine": "Ordenes",
+    "order": "Lista de pedidos",
+    "report": "Reportes",
+    "alert": "Alertas",
+    "configuration": "Configuración"
+  },
+  "logout": "Cerrar Sesión"
+}
+}

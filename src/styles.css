@@ -1,0 +1,25 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background: #3A1E2A;
+  background: linear-gradient(135deg, #3A1E2A 0%, #2C2129 100%);
+  color: #FEEED4;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  background-attachment: fixed;
+}
+
+.container-with-spacing {
+  margin: 10px;
+}
+
+.mat-spacer {
+  flex: 1 1 auto;
+}

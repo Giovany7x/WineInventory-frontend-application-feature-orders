@@ -1,0 +1,87 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- Left Side - Login Form -->
+    <div class="form-section">
+      <div class="form-container">
+        <h1>{{ 'sign-in.title' | translate }}</h1>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <!-- Email Input -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-in.email' | translate }}</mat-label>
+              <input matInput 
+                type="email" 
+                formControlName="email" 
+                placeholder="{{ 'sign-in.email' | translate }}"
+                required>
+              <mat-icon matPrefix>mail_outline</mat-icon>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+                {{ 'sign-in.email-required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+                {{ 'sign-in.email-invalid' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-in.password' | translate }}</mat-label>
+              <input matInput 
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="{{ 'sign-in.password' | translate }}"
+                required>
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+                {{ 'sign-in.password-required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+                {{ 'sign-in.password-minlength' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="form-options">
+            <mat-checkbox formControlName="rememberMe">
+              {{ 'sign-in.remember-me' | translate }}
+            </mat-checkbox>
+            <a href="#" class="forgot-password">
+              {{ 'sign-in.forgot-password' | translate }}
+            </a>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="submit-button">
+            <button 
+              type="submit"
+              mat-raised-button 
+              color="primary"
+              [disabled]="!loginForm.valid">
+              {{ 'sign-in.submit' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Side - Welcome Section -->
+    <div class="welcome-section">
+      <div class="welcome-content">
+        <h1>{{ 'sign-in.welcome-title' | translate }}</h1>
+        <p>
+          {{ 'sign-in.welcome-text' | translate }}
+        </p>
+        <button (click)="toggleForm()" class="outline-button">
+          {{ 'sign-in.register' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

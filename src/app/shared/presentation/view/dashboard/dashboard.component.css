@@ -1,0 +1,31 @@
+:root {
+  --dark-bg: #2C2129;      
+  --accent-light: #FEEED4; 
+  --panel: #FFF8F7;        
+  --muted: #E8C8C8;        
+  --brand-deep: #6B0F0F;   
+  --brand-action: #C81D33; 
+  --text-muted: #6B6B6B;   
+  --gold-accent: #CC8811;  
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--dark-bg);
+  color: var(--accent-light);
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px 32px;
+  margin-left: 250px;
+  background-color: var(--dark-bg);
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 70px;
+    padding: 16px;
+  }
+}

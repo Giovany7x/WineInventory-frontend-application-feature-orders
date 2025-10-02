@@ -1,0 +1,55 @@
+<div class="sidebar" [class.collapsed]="!isExpanded">
+  <!-- Header with logo and toggle -->
+  <div class="sidebar-header">
+    <div class="logo-container" *ngIf="isExpanded">
+      <!-- Using text logo since we don't have an image -->
+      <div class="logo-placeholder">WI</div>
+      <h2>WineInventory</h2>
+    </div>
+    <button mat-icon-button class="toggle-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+      <mat-icon>{{ isExpanded ? 'menu_open' : 'menu' }}</mat-icon>
+    </button>
+  </div>
+
+  <!-- Navigation Items -->
+  <nav class="nav-menu">
+    <div class="nav-section">
+      <div class="nav-section-title" *ngIf="isExpanded">{{ 'side-navbar.title' | translate }}</div>
+      <ul class="nav-items">
+        <li *ngFor="let item of navItems" 
+            [class.active]="item.isActive" 
+            (click)="onNavItemClick(item)"
+            [title]="!isExpanded ? (item.label | translate) : ''"
+            [attr.aria-label]="item.label | translate"
+            [class.has-notification]="item.icon === 'notifications' && unreadAlerts > 0">
+          <mat-icon class="nav-icon" aria-hidden="true">{{item.icon}}</mat-icon>
+          <span class="nav-label" *ngIf="isExpanded">
+            {{ item.label | translate }}
+            <span class="notification-badge" *ngIf="item.icon === 'notifications' && unreadAlerts > 0 && isExpanded">
+              {{unreadAlerts}}
+            </span>
+          </span>
+          <span class="notification-dot" *ngIf="item.icon === 'notifications' && unreadAlerts > 0 && !isExpanded"></span>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- User Profile -->
+  <div class="user-profile" *ngIf="isExpanded">
+    <div class="user-avatar">
+      <mat-icon>account_circle</mat-icon>
+    </div>
+    <div class="user-info">
+      <div class="user-name">Admin User</div>
+      <div class="user-email"></div>
+    </div>
+  </div>
+  <!-- Logout Button -->
+  <div class="logout-container">
+    <button mat-button class="logout-button" (click)="logout()">
+      <mat-icon>exit_to_app</mat-icon>
+      <span *ngIf="isExpanded">{{ 'side-navbar.logout' | translate }}</span>
+    </button>
+  </div>
+</div>

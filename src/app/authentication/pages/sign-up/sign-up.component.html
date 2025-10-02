@@ -1,0 +1,144 @@
+<div class="login-container">
+  <div class="login-card">
+    <!-- Left Side - Welcome Section -->
+    <div class="welcome-section">
+      <div class="welcome-content">
+        <p>
+          {{ 'sign-up.have-account' | translate }}
+        </p>
+        <h1>{{ 'sign-up.welcome-title' | translate }}</h1>
+        <button (click)="toggleForm()" class="welcome-button" mat-stroked-button>
+          {{ 'sign-up.sign-in' | translate }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Right Side - Sign Up Form -->
+    <div class="form-section">
+      <div class="form-container">
+        <h1>{{ 'sign-up.title' | translate }}</h1>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+          <!-- Name Input -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-up.name' | translate }}</mat-label>
+              <input matInput 
+                type="text" 
+                formControlName="name" 
+                placeholder="{{ 'sign-up.name' | translate }}"
+                required>
+              <mat-icon matPrefix>person_outline</mat-icon>
+              <mat-error *ngIf="signupForm.get('name')?.hasError('required')">
+                {{ 'sign-up.name-required' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Email Input -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-up.email' | translate }}</mat-label>
+              <input matInput 
+                type="email" 
+                formControlName="email" 
+                placeholder="{{ 'sign-up.email' | translate }}"
+                required>
+              <mat-icon matPrefix>mail_outline</mat-icon>
+              <mat-error *ngIf="signupForm.get('email')?.hasError('required')">
+                {{ 'sign-up.email-required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="signupForm.get('email')?.hasError('email')">
+                {{ 'sign-up.email-invalid' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Role Selection -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-up.role' | translate }}</mat-label>
+              <mat-select formControlName="role" required>
+                <mat-option *ngFor="let role of roles" [value]="role.value">
+                  {{ role.viewValue | translate }}
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>person_outline</mat-icon>
+              <mat-error *ngIf="signupForm.get('role')?.hasError('required')">
+                {{ 'sign-up.role-required' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-up.password' | translate }}</mat-label>
+              <input matInput 
+                [type]="hidePassword ? 'password' : 'text'"
+                formControlName="password"
+                placeholder="{{ 'sign-up.password' | translate }}"
+                required>
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button type="button" mat-icon-button matSuffix (click)="hidePassword = !hidePassword">
+                <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="signupForm.get('password')?.hasError('required')">
+                {{ 'sign-up.password-required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="signupForm.get('password')?.hasError('minlength')">
+                {{ 'sign-up.password-minlength' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Confirm Password Input -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'sign-up.confirm-password' | translate }}</mat-label>
+              <input matInput 
+                [type]="hideConfirmPassword ? 'password' : 'text'"
+                formControlName="confirmPassword"
+                placeholder="{{ 'sign-up.confirm-password' | translate }}"
+                required>
+              <mat-icon matPrefix>lock_reset</mat-icon>
+              <button type="button" mat-icon-button matSuffix (click)="hideConfirmPassword = !hideConfirmPassword">
+                <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="signupForm.get('confirmPassword')?.hasError('required')">
+                {{ 'sign-up.confirm-password-required' | translate }}
+              </mat-error>
+              <mat-error *ngIf="signupForm.hasError('mismatch')">
+                {{ 'sign-up.passwords-mismatch' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Terms and Conditions -->
+          <div class="form-group terms">
+            <mat-checkbox formControlName="acceptTerms">
+              {{ 'sign-up.accept-terms-1' | translate }}
+              <a href="#" class="terms-link">{{ 'sign-up.terms' | translate }}</a>
+              {{ 'sign-up.accept-terms-2' | translate }}
+              <a href="#" class="terms-link">{{ 'sign-up.privacy' | translate }}</a>
+            </mat-checkbox>
+            <mat-error *ngIf="signupForm.get('acceptTerms')?.hasError('required')" class="terms-error">
+              {{ 'sign-up.accept-terms-required' | translate }}
+            </mat-error>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="submit-button">
+            <button 
+              type="submit"
+              mat-raised-button 
+              color="primary"
+              [disabled]="!signupForm.valid">
+              {{ 'sign-up.submit' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
