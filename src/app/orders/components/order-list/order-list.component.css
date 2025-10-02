@@ -1,0 +1,158 @@
+.order-list {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 16px 32px rgba(108, 55, 140, 0.12);
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.order-list__header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.order-list__header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2b0a3d;
+}
+
+.order-list__filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-chip {
+  border: none;
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  background: #ede7f6;
+  color: #5b2a86;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.filter-chip--active {
+  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  color: #ffffff;
+}
+
+.order-list__table-wrapper {
+  overflow-x: auto;
+}
+
+.order-list__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.order-list__table thead {
+  background: #f5f0ff;
+}
+
+.order-list__table th,
+.order-list__table td {
+  text-align: left;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #ede7f6;
+}
+
+.order-list__table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.order-list__table tbody tr:hover {
+  background: rgba(142, 36, 170, 0.08);
+}
+
+.order-code {
+  font-weight: 700;
+  color: #4a148c;
+}
+
+.order-customer {
+  display: block;
+  font-weight: 600;
+}
+
+.order-customer__email {
+  color: #7e57c2;
+}
+
+.order-list__actions button {
+  border: none;
+  background: transparent;
+  color: #6a1b9a;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  transition: background 0.2s ease;
+}
+
+.order-list__actions button:hover {
+  background: rgba(106, 27, 154, 0.1);
+}
+
+.badge {
+  border-radius: 999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge--pending {
+  background: rgba(255, 193, 7, 0.18);
+  color: #ff8f00;
+}
+
+.badge--processing {
+  background: rgba(33, 150, 243, 0.18);
+  color: #1976d2;
+}
+
+.badge--completed {
+  background: rgba(76, 175, 80, 0.18);
+  color: #2e7d32;
+}
+
+.badge--cancelled {
+  background: rgba(244, 67, 54, 0.18);
+  color: #c62828;
+}
+
+.order-list__empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #5b2a86;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-list__empty a {
+  align-self: center;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .order-list {
+    padding: 1.25rem;
+  }
+}

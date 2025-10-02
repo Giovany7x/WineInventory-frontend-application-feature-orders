@@ -11,6 +11,13 @@ export const routes: Routes = [
   { path: '', redirectTo: 'sign-in', pathMatch: 'full' },
   { path: 'sign-in', loadComponent: SignInComponent, data: { title: `${baseTitle} | Sign In` } },
   { path: 'sign-up', loadComponent: SignUpComponent, data: { title: `${baseTitle} | Sign Up` } },
-  { path: 'dashboard',loadComponent: DashboardComponent,children: [{ path: '', redirectTo: 'home', pathMatch: 'full' },]},
+  {
+    path: 'dashboard',
+    loadComponent: DashboardComponent,
+    children: [
+      { path: '', redirectTo: 'sales', pathMatch: 'full' },
+      { path: 'sales', loadChildren: () => import('./orders/orders.routes').then(m => m.ORDERS_ROUTES) }
+    ]
+  },
   { path: '**', loadComponent: PageNotFoundComponent, data: { title: `${baseTitle} | Page Not Found` } }
 ];
