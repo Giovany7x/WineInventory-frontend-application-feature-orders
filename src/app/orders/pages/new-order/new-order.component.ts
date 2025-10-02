@@ -91,8 +91,10 @@ export class NewOrderComponent implements OnInit {
       }))
     };
 
-    this.ordersService.createOrder(payload);
-    this.router.navigate(['/dashboard', 'sales']);
+    this.ordersService.createOrder(payload).subscribe({
+      next: () => this.router.navigate(['/dashboard', 'sales']),
+      error: error => console.error('No se pudo crear la orden.', error)
+    });
   }
 
   trackByIndex(index: number): number {

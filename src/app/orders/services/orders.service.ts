@@ -1,21 +1,23 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 
 import { CatalogService } from './catalog.service';
 import { CatalogItem } from '../models/catalog-item.entity';
 import { NewOrderInput, Order, OrderItem, OrderStatus } from '../models/order.entity';
+import { environment } from '../../../environments/environment';
 
 const TAX_RATE = 0.19;
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
+  private readonly http = inject(HttpClient);
   private readonly catalogService = inject(CatalogService);
   private readonly ordersSubject = new BehaviorSubject<Order[]>([]);
+  private readonly ordersEndpoint = `${environment.apiUrl}/orders`;
 
   constructor() {
-    const seededOrders = this.createSeedOrders();
-    this.ordersSubject.next(seededOrders);
+    this.refreshOrders().subscribe();
   }
 
   getOrders(): Observable<Order[]> {
@@ -26,7 +28,16 @@ export class OrdersService {
     return this.ordersSubject.pipe(map(orders => orders.find(order => order.id === orderId)));
   }
 
-  createOrder(input: NewOrderInput): Order {
+  refreshOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(this.ordersEndpoint).pipe(
+      tap({
+        next: orders => this.ordersSubject.next(orders),
+        error: error => console.error('No se pudieron cargar las órdenes.', error)
+      })
+    );
+  }
+
+  createOrder(input: NewOrderInput): Observable<Order> {
     const orderId = this.generateOrderId();
     const items = input.items.map((item, index) => this.createOrderItemFromCatalogId(orderId, index, item.catalogItemId, item.quantity));
     const totals = this.calculateTotals(items);
@@ -43,89 +54,34 @@ export class OrdersService {
       ...totals
     };
 
-    this.ordersSubject.next([...this.ordersSubject.getValue(), newOrder]);
-    return newOrder;
+    return this.http.post<Order>(this.ordersEndpoint, newOrder).pipe(
+      tap({
+        next: order => this.ordersSubject.next([...this.ordersSubject.getValue(), order]),
+        error: error => console.error('No se pudo crear la orden.', error)
+      })
+    );
   }
 
-  updateOrderStatus(orderId: string, status: OrderStatus): void {
+  updateOrderStatus(orderId: string, status: OrderStatus): Observable<Order | undefined> {
     const orders = this.ordersSubject.getValue();
     const index = orders.findIndex(order => order.id === orderId);
     if (index === -1) {
-      return;
+      return this.getOrderById(orderId);
     }
 
     const updatedOrder: Order = { ...orders[index], status };
-    const updatedOrders = [...orders];
-    updatedOrders.splice(index, 1, updatedOrder);
-    this.ordersSubject.next(updatedOrders);
-  }
 
-  private createSeedOrders(): Order[] {
-    const catalog = this.catalogService.getCatalogSnapshot();
-    const firstOrderItems = [
-      this.tryCreateOrderItem('ord-0001', 0, catalog[0], 6),
-      this.tryCreateOrderItem('ord-0001', 1, catalog[2], 3)
-    ].filter(Boolean) as OrderItem[];
-
-    const secondOrderItems = [
-      this.tryCreateOrderItem('ord-0002', 0, catalog[1], 12),
-      this.tryCreateOrderItem('ord-0002', 1, catalog[4], 8)
-    ].filter(Boolean) as OrderItem[];
-
-    const thirdOrderItems = [
-      this.tryCreateOrderItem('ord-0003', 0, catalog[1], 20)
-    ].filter(Boolean) as OrderItem[];
-
-    const firstTotals = this.calculateTotals(firstOrderItems);
-    const secondTotals = this.calculateTotals(secondOrderItems);
-    const thirdTotals = this.calculateTotals(thirdOrderItems);
-
-    return [
-      {
-        id: 'ord-0001',
-        code: 'WI-2025-001',
-        customerName: 'Restaurante La Vid',
-        customerEmail: 'compras@lavid.com',
-        status: 'processing',
-        createdAt: this.createPastDate(3),
-        expectedDelivery: this.createFutureDate(2),
-        notes: 'Entrega en horario matutino.',
-        items: firstOrderItems,
-        ...firstTotals
-      },
-      {
-        id: 'ord-0002',
-        code: 'WI-2025-002',
-        customerName: 'Bodega El Roble',
-        customerEmail: 'contacto@elroble.ar',
-        status: 'completed',
-        createdAt: this.createPastDate(10),
-        expectedDelivery: this.createPastDate(3),
-        notes: 'Pedido recurrente mensual.',
-        items: secondOrderItems,
-        ...secondTotals
-      },
-      {
-        id: 'ord-0003',
-        code: 'WI-2025-003',
-        customerName: 'Wine Lovers Club',
-        customerEmail: 'compras@wineloversclub.es',
-        status: 'pending',
-        createdAt: this.createPastDate(1),
-        expectedDelivery: this.createFutureDate(5),
-        notes: 'Confirmar disponibilidad del Malbec 2019.',
-        items: thirdOrderItems,
-        ...thirdTotals
-      }
-    ];
-  }
-
-  private tryCreateOrderItem(orderId: string, index: number, catalogItem: CatalogItem | undefined, quantity: number): OrderItem | null {
-    if (!catalogItem) {
-      return null;
-    }
-
-    return this.createOrderItem(orderId, index, catalogItem, quantity);
+    return this.http.patch<Order>(`${this.ordersEndpoint}/${orderId}`, { status }).pipe(
+      tap({
+        next: response => {
+          const nextOrders = [...orders];
+          nextOrders.splice(index, 1, { ...updatedOrder, ...response });
+          this.ordersSubject.next(nextOrders);
+        },
+        error: error => console.error('No se pudo actualizar el estado de la orden.', error)
+      }),
+      map(response => ({ ...updatedOrder, ...response }))
+    );
   }
 
   private createOrderItem(orderId: string, index: number, catalogItem: CatalogItem, quantity: number): OrderItem {
@@ -170,12 +126,6 @@ export class OrdersService {
 
   private computeExpectedDeliveryDate(): string {
     return this.createFutureDate(4);
-  }
-
-  private createPastDate(daysAgo: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() - daysAgo);
-    return date.toISOString();
   }
 
   private createFutureDate(daysAhead: number): string {

@@ -40,7 +40,9 @@ export class OrderDetailComponent {
 
   updateStatus(order: Order, status: string): void {
     if (this.statusOptions.includes(status as OrderStatus)) {
-      this.ordersService.updateOrderStatus(order.id, status as OrderStatus);
+      this.ordersService.updateOrderStatus(order.id, status as OrderStatus).subscribe({
+        error: error => console.error('No se pudo actualizar el estado de la orden.', error)
+      });
     }
   }
 
