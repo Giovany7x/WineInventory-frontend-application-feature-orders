@@ -1,1 +1,26 @@
-<p>orders works!</p>
+<section class="orders-page">
+  <header class="orders-page__header">
+    <div>
+      <h1>Pedidos</h1>
+      <p class="orders-page__subtitle">Administra el ciclo completo de ventas y el estado de cada pedido.</p>
+    </div>
+    <a class="orders-page__cta" routerLink="/dashboard/sales/new">Crear pedido</a>
+  </header>
+
+  <section class="orders-page__summary" *ngIf="summary$ | async as summary">
+    <article class="summary-card">
+      <span class="summary-card__label">Pedidos totales</span>
+      <strong class="summary-card__value">{{ summary.totalOrders }}</strong>
+    </article>
+    <article class="summary-card">
+      <span class="summary-card__label">Ingresos acumulados</span>
+      <strong class="summary-card__value">{{ summary.totalRevenue | currency:'USD':'symbol':'1.0-0' }}</strong>
+    </article>
+    <article class="summary-card" *ngFor="let status of summaryStatuses">
+      <span class="summary-card__label">{{ statusLabels[status] }}</span>
+      <strong class="summary-card__value">{{ summary.byStatus[status] }}</strong>
+    </article>
+  </section>
+
+  <app-order-list></app-order-list>
+</section>

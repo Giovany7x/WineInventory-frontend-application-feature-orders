@@ -1,1 +1,99 @@
-<p>new-order works!</p>
+<section class="new-order">
+  <header class="new-order__header">
+    <div>
+      <h1>Nuevo pedido</h1>
+      <p>Completa la información del cliente y selecciona los vinos que formarán parte del pedido.</p>
+    </div>
+    <nav>
+      <a routerLink="/dashboard/sales">Volver al listado</a>
+    </nav>
+  </header>
+
+  <form [formGroup]="orderForm" (ngSubmit)="submit()" class="new-order__form">
+    <section class="form-section">
+      <h2>Datos del cliente</h2>
+      <div class="form-grid">
+        <label class="form-field">
+          <span>Nombre del cliente *</span>
+          <input type="text" formControlName="customerName" placeholder="Ej. Restaurante La Vid" />
+          <small class="error" *ngIf="orderForm.get('customerName')?.touched && orderForm.get('customerName')?.hasError('required')">
+            Este campo es obligatorio.
+          </small>
+        </label>
+        <label class="form-field">
+          <span>Correo electrónico</span>
+          <input type="email" formControlName="customerEmail" placeholder="correo@cliente.com" />
+          <small class="error" *ngIf="orderForm.get('customerEmail')?.touched && orderForm.get('customerEmail')?.hasError('email')">
+            Ingresa un correo válido.
+          </small>
+        </label>
+        <label class="form-field form-field--full">
+          <span>Notas adicionales</span>
+          <textarea rows="3" formControlName="notes" placeholder="Indica instrucciones especiales de entrega"></textarea>
+        </label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="section-header">
+        <h2>Detalle del pedido</h2>
+        <button type="button" (click)="addItem()">Agregar producto</button>
+      </div>
+
+      <div class="order-items" formArrayName="items">
+        <div class="order-item" *ngFor="let item of items.controls; let i = index; trackBy: trackByIndex" [formGroupName]="i">
+          <label>
+            <span>Producto *</span>
+            <select formControlName="catalogItemId">
+              <option [ngValue]="null" disabled>Selecciona una referencia</option>
+              <option *ngFor="let catalogItem of (catalogItems$ | async)" [ngValue]="catalogItem.id">
+                {{ catalogItem.name }} · {{ catalogItem.vintage }} · {{ catalogItem.price | currency:'USD':'symbol':'1.0-0' }}
+              </option>
+            </select>
+            <small class="error" *ngIf="item.get('catalogItemId')?.touched && item.get('catalogItemId')?.hasError('required')">
+              Selecciona un producto.
+            </small>
+          </label>
+
+          <label>
+            <span>Cantidad *</span>
+            <input type="number" min="1" formControlName="quantity" />
+            <small class="error" *ngIf="item.get('quantity')?.touched && item.get('quantity')?.hasError('min')">
+              Debe ser al menos 1 unidad.
+            </small>
+          </label>
+
+          <button type="button" class="remove" (click)="removeItem(i)" *ngIf="items.length > 1">Eliminar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section" *ngIf="orderPreview$ | async as preview">
+      <h2>Resumen</h2>
+      <ul class="preview-list">
+        <li *ngFor="let item of preview.items">
+          <span>{{ item.name }} · {{ item.quantity }} uds.</span>
+          <strong>{{ item.total | currency:'USD':'symbol':'1.0-0' }}</strong>
+        </li>
+      </ul>
+      <div class="preview-totals">
+        <div>
+          <span>Subtotal</span>
+          <strong>{{ preview.subtotal | currency:'USD':'symbol':'1.0-0' }}</strong>
+        </div>
+        <div>
+          <span>Impuestos (19%)</span>
+          <strong>{{ preview.tax | currency:'USD':'symbol':'1.0-0' }}</strong>
+        </div>
+        <div class="preview-totals__total">
+          <span>Total</span>
+          <strong>{{ preview.total | currency:'USD':'symbol':'1.0-0' }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <footer class="form-actions">
+      <button type="submit">Guardar pedido</button>
+    </footer>
+  </form>
+</section>
