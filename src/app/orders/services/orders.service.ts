@@ -1,20 +1,17 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 
-import { CatalogService } from './catalog.service';
-import { CatalogItem } from '../models/catalog-item.entity';
-import { NewOrderInput, Order, OrderItem, OrderStatus } from '../models/order.entity';
+import { NewOrderInput, Order, OrderStatus } from '../models/order.entity';
 import { environment } from '../../../environments/environment';
-
-const TAX_RATE = 0.19;
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   private readonly http = inject(HttpClient);
-  private readonly catalogService = inject(CatalogService);
   private readonly ordersSubject = new BehaviorSubject<Order[]>([]);
   private readonly ordersEndpoint = `${environment.apiUrl}/orders`;
+  private readonly pendingOrderLoads = new Set<string>();
 
   constructor() {
     this.refreshOrders().subscribe();
@@ -25,7 +22,11 @@ export class OrdersService {
   }
 
   getOrderById(orderId: string): Observable<Order | undefined> {
-    return this.ordersSubject.pipe(map(orders => orders.find(order => order.id === orderId)));
+    return this.ordersSubject.pipe(
+      tap(orders => this.ensureOrderLoaded(orderId, orders)),
+      map(orders => orders.find(order => order.id === orderId)),
+      distinctUntilChanged()
+    );
   }
 
   refreshOrders(): Observable<Order[]> {
@@ -38,25 +39,12 @@ export class OrdersService {
   }
 
   createOrder(input: NewOrderInput): Observable<Order> {
-    const orderId = this.generateOrderId();
-    const items = input.items.map((item, index) => this.createOrderItemFromCatalogId(orderId, index, item.catalogItemId, item.quantity));
-    const totals = this.calculateTotals(items);
-    const newOrder: Order = {
-      id: orderId,
-      code: this.generateOrderCode(),
-      customerName: input.customerName,
-      customerEmail: input.customerEmail,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      expectedDelivery: this.computeExpectedDeliveryDate(),
-      notes: input.notes,
-      items,
-      ...totals
-    };
-
-    return this.http.post<Order>(this.ordersEndpoint, newOrder).pipe(
+    return this.http.post<Order>(this.ordersEndpoint, input).pipe(
       tap({
-        next: order => this.ordersSubject.next([...this.ordersSubject.getValue(), order]),
+        next: order => {
+          this.upsertOrderInCache(order);
+          this.requestOrderFromServer(order.id);
+        },
         error: error => console.error('No se pudo crear la orden.', error)
       })
     );
@@ -84,53 +72,59 @@ export class OrdersService {
     );
   }
 
-  private createOrderItem(orderId: string, index: number, catalogItem: CatalogItem, quantity: number): OrderItem {
-    const safeQuantity = Math.max(1, quantity);
-    const unitPrice = catalogItem.price;
-    const lineTotal = unitPrice * safeQuantity;
-
-    return {
-      id: `${orderId}-item-${index + 1}`,
-      catalogItem,
-      quantity: safeQuantity,
-      unitPrice,
-      lineTotal
-    };
-  }
-
-  private createOrderItemFromCatalogId(orderId: string, index: number, catalogItemId: string, quantity: number): OrderItem {
-    const catalogItem = this.catalogService.findById(catalogItemId);
-    if (!catalogItem) {
-      throw new Error(`El artículo con id ${catalogItemId} no existe en el catálogo.`);
+  private ensureOrderLoaded(orderId: string, orders: Order[]): void {
+    const existingOrder = orders.find(order => order.id === orderId);
+    if (this.isOrderComplete(existingOrder)) {
+      return;
     }
 
-    return this.createOrderItem(orderId, index, catalogItem, quantity);
+    this.requestOrderFromServer(orderId);
   }
 
-  private calculateTotals(items: OrderItem[]): Pick<Order, 'subtotal' | 'tax' | 'total'> {
-    const subtotal = items.reduce((acc, item) => acc + item.lineTotal, 0);
-    const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
-    const total = Math.round((subtotal + tax) * 100) / 100;
-    return { subtotal, tax, total };
+  private requestOrderFromServer(orderId: string): void {
+    if (this.pendingOrderLoads.has(orderId)) {
+      return;
+    }
+
+    this.pendingOrderLoads.add(orderId);
+
+    this.http.get<Order>(`${this.ordersEndpoint}/${orderId}`).subscribe({
+      next: order => {
+        this.pendingOrderLoads.delete(orderId);
+        if (order) {
+          this.upsertOrderInCache(order);
+        }
+      },
+      error: error => {
+        console.error('No se pudo cargar la orden solicitada.', error);
+        this.pendingOrderLoads.delete(orderId);
+      }
+    });
   }
 
-  private generateOrderId(): string {
-    return `ord-${Math.random().toString(36).slice(2, 8)}`;
+  private upsertOrderInCache(order: Order): void {
+    const orders = this.ordersSubject.getValue();
+    const index = orders.findIndex(existing => existing.id === order.id);
+
+    if (index === -1) {
+      this.ordersSubject.next([...orders, order]);
+      return;
+    }
+
+    const nextOrders = [...orders];
+    nextOrders.splice(index, 1, { ...orders[index], ...order });
+    this.ordersSubject.next(nextOrders);
   }
 
-  private generateOrderCode(): string {
-    const year = new Date().getFullYear();
-    const sequential = (this.ordersSubject.getValue().length + 1).toString().padStart(3, '0');
-    return `WI-${year}-${sequential}`;
-  }
+  private isOrderComplete(order: Order | undefined): order is Order {
+    if (!order) {
+      return false;
+    }
 
-  private computeExpectedDeliveryDate(): string {
-    return this.createFutureDate(4);
-  }
+    const hasItems = Array.isArray(order.items) && order.items.length > 0;
+    const hasTotals = typeof order.subtotal === 'number' && typeof order.total === 'number';
+    const hasCreatedAt = typeof order.createdAt === 'string' && order.createdAt.length > 0;
 
-  private createFutureDate(daysAhead: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() + daysAhead);
-    return date.toISOString();
+    return hasItems && hasTotals && hasCreatedAt;
   }
 }
