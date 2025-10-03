@@ -19,6 +19,8 @@ export class OrderDetailComponent {
   private readonly router = inject(Router);
   private readonly ordersService = inject(OrdersService);
 
+  isDeleting = false;
+
   readonly order$: Observable<Order | null> = this.route.paramMap.pipe(
     switchMap(params => {
       const orderId = params.get('orderId') ?? params.get('id');
@@ -44,6 +46,22 @@ export class OrderDetailComponent {
         error: error => console.error('No se pudo actualizar el estado de la orden.', error)
       });
     }
+  }
+
+  deleteOrder(order: Order): void {
+    if (this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+
+    this.ordersService.deleteOrder(order.id).subscribe({
+      next: () => this.goBack(),
+      error: error => {
+        this.isDeleting = false;
+        console.error('No se pudo eliminar la orden.', error);
+      }
+    });
   }
 
   goBack(): void {
