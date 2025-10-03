@@ -17,7 +17,7 @@
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
-  color: #2b0a3d;
+  color: black;
 }
 
 .new-order__header p {
@@ -28,7 +28,7 @@
 
 .new-order__header a {
   text-decoration: none;
-  color: #6a1b9a;
+  color: #C81D33;
   font-weight: 600;
 }
 
@@ -51,7 +51,7 @@
 .form-section h2 {
   margin: 0;
   font-size: 1.35rem;
-  color: #4a148c;
+  color: #C81D33;
 }
 
 .section-header {
@@ -65,7 +65,7 @@
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  background: linear-gradient(135deg, #C81D33, #8e24aa);
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
@@ -85,7 +85,7 @@
 
 .form-field span {
   font-weight: 600;
-  color: #5b2a86;
+  color: gray;
 }
 
 .form-field input,
@@ -177,7 +177,7 @@
 
 .preview-totals__total {
   font-size: 1.2rem;
-  color: #4a148c;
+  color: #C81D33;
 }
 
 .form-actions {
@@ -189,7 +189,7 @@
   border: none;
   padding: 0.75rem 1.75rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  background: linear-gradient(135deg, #C81D33, #8e24aa);
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;

@@ -57,7 +57,7 @@
       "code": "WI-2025-001",
       "customerName": "Restaurante La Vid",
       "customerEmail": "compras@lavid.com",
-      "status": "processing",
+      "status": "completed",
       "createdAt": "2025-02-20T09:30:00.000Z",
       "expectedDelivery": "2025-02-24T09:30:00.000Z",
       "notes": "Entrega en horario matutino.",
@@ -168,45 +168,35 @@
       "total": 999.6
     },
     {
-      "id": "4bc3",
-      "customerName": "dgfdgfdgdfg",
-      "customerEmail": "dfgdfgdfgdfg@gmail.com",
-      "notes": "dgdfgfdgdf",
+      "id": "ord-0004",
+      "code": "WI-2025-004",
+      "customerName": "sdfsdfsd",
+      "status": "processing",
+      "createdAt": "2025-10-03T16:55:00.000Z",
+      "expectedDelivery": "2025-10-07T16:55:00.000Z",
       "items": [
         {
-          "catalogItemId": "cab-2018",
-          "quantity": 10
-        },
-        {
-          "catalogItemId": "mal-2019",
-          "quantity": 3
+          "id": "ord-0004-item-1",
+          "catalogItem": {
+            "id": "cab-2018",
+            "name": "Gran Reserva Cabernet Sauvignon",
+            "varietal": "Cabernet Sauvignon",
+            "vintage": 2018,
+            "origin": "Napa Valley, USA",
+            "price": 58,
+            "imageUrl": "https://images.unsplash.com/photo-1543248939-ff40856f65d4",
+            "tastingNotes": "Notas de cassis, vainilla y roble tostado con taninos redondos."
+          },
+          "quantity": 10,
+          "unitPrice": 58,
+          "lineTotal": 580
         }
       ],
-      "status": "completed"
-    },
-    {
-      "id": "4cdf",
-      "customerName": "sgsdfgdfg",
-      "customerEmail": "sdgsd@dfdsf",
-      "notes": "sdfsdfdsfsdfsdfssdfsdfsdfsdf",
-      "items": [
-        {
-          "catalogItemId": "cab-2018",
-          "quantity": 5
-        }
-      ]
-    },
-    {
-      "id": "b530",
-      "customerName": "ghdfggdfh",
-      "customerEmail": "hcvh@g",
-      "notes": "xfhcghxfhgdfhd",
-      "items": [
-        {
-          "catalogItemId": "cab-2018",
-          "quantity": 1
-        }
-      ]
+      "subtotal": 580,
+      "tax": 110.2,
+      "total": 690.2,
+      "customerEmail": "sdfdsfs@f",
+      "notes": "sdvsvsdvsv"
     }
   ]
 }
