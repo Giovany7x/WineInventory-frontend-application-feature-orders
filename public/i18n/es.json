@@ -46,15 +46,62 @@
     "button": "Volver a la página principal"
   },
   "side-navbar": {
-  "title": "Menu principal",
-  "options": {
-    "dashboard": "Inicio",
-    "wine": "Ordenes",
-    "order": "Lista de pedidos",
-    "report": "Reportes",
-    "alert": "Alertas",
-    "configuration": "Configuración"
+    "title": "Menú principal",
+    "options": {
+      "dashboard": "Inicio",
+      "wine": "Órdenes",
+      "order": "Lista de pedidos",
+      "report": "Reportes",
+      "alert": "Alertas",
+      "configuration": "Configuración"
+    },
+    "logout": "Cerrar Sesión"
   },
-  "logout": "Cerrar Sesión"
-}
+  "orders": {
+    "status": {
+      "pending": "Pendiente",
+      "processing": "En preparación",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    },
+    "detail": {
+      "header": {
+        "title": "Pedido {{ code }}",
+        "createdAt": "Creado el {{ date }}"
+      },
+      "actions": {
+        "delete": "Eliminar orden",
+        "deleting": "Eliminando...",
+        "back": "Volver"
+      },
+      "sections": {
+        "customer": "Cliente",
+        "delivery": "Entrega",
+        "summary": "Resumen",
+        "items": "Productos"
+      },
+      "delivery": {
+        "expected": "Fecha estimada: {{ date }}",
+        "status": "Estado:"
+      },
+      "summary": {
+        "subtotal": "Subtotal:",
+        "tax": "Impuestos:",
+        "total": "Total:"
+      },
+      "table": {
+        "reference": "Referencia",
+        "varietal": "Varietal",
+        "vintage": "Cosecha",
+        "quantity": "Cantidad",
+        "unitPrice": "Precio unitario",
+        "total": "Total"
+      },
+      "empty": {
+        "title": "Pedido no encontrado",
+        "description": "El identificador proporcionado no coincide con ningún pedido registrado.",
+        "backToList": "Volver al listado"
+      }
+    }
+  }
 }
