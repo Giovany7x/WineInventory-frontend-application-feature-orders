@@ -46,6 +46,20 @@
   cursor: pointer;
 }
 
+.order-detail__actions button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.order-detail__delete {
+  background: linear-gradient(135deg, #c62828, #ef5350);
+}
+
+.order-detail__delete:disabled {
+  background: #ef9a9a;
+  color: #ffffff;
+}
+
 .order-detail__info {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));

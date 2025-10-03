@@ -85,6 +85,19 @@ export class OrdersService {
     );
   }
 
+  deleteOrder(orderId: string): Observable<void> {
+    return this.http.delete<void>(`${this.ordersEndpoint}/${orderId}`).pipe(
+      tap({
+        next: () => {
+          const orders = this.ordersSubject.getValue();
+          const nextOrders = orders.filter(order => order.id !== orderId);
+          this.ordersSubject.next(nextOrders);
+        },
+        error: error => console.error('No se pudo eliminar la orden.', error)
+      })
+    );
+  }
+
   private ensureOrderLoaded(orderId: string, orders: Order[]): void {
     const existingOrder = orders.find(order => order.id === orderId);
     if (this.isOrderComplete(existingOrder)) {
