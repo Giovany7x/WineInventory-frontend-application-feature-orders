@@ -35,6 +35,39 @@
     </section>
 
     <section class="form-section">
+      <h2>Información del pedido</h2>
+      <div class="form-grid">
+        <label class="form-field">
+          <span>Fecha de creación *</span>
+          <input type="datetime-local" formControlName="createdAt" />
+          <small class="error" *ngIf="orderForm.get('createdAt')?.touched && orderForm.get('createdAt')?.hasError('required')">
+            Este campo es obligatorio.
+          </small>
+        </label>
+        <label class="form-field">
+          <span>Fecha de entrega *</span>
+          <input type="datetime-local" formControlName="expectedDelivery" [min]="orderForm.get('createdAt')?.value || undefined" />
+          <small class="error" *ngIf="orderForm.get('expectedDelivery')?.touched && orderForm.get('expectedDelivery')?.hasError('required')">
+            Este campo es obligatorio.
+          </small>
+          <small class="error" *ngIf="orderForm.hasError('deliveryBeforeCreation') && orderForm.get('expectedDelivery')?.touched">
+            La fecha de entrega no puede ser anterior a la fecha de creación.
+          </small>
+        </label>
+        <label class="form-field">
+          <span>Estado *</span>
+          <select formControlName="status">
+            <option [ngValue]="null" disabled>Selecciona un estado</option>
+            <option *ngFor="let status of statusOptions" [ngValue]="status">{{ statusLabels[status] }}</option>
+          </select>
+          <small class="error" *ngIf="orderForm.get('status')?.touched && orderForm.get('status')?.hasError('required')">
+            Selecciona un estado para el pedido.
+          </small>
+        </label>
+      </div>
+    </section>
+
+    <section class="form-section">
       <div class="section-header">
         <h2>Detalle del pedido</h2>
         <button type="button" (click)="addItem()">Agregar producto</button>
