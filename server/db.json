@@ -207,6 +207,37 @@
           "quantity": 1
         }
       ]
+    },
+    {
+      "id": "ord-0004",
+      "code": "WI-2025-004",
+      "customerName": "sdfsdfsd",
+      "status": "processing",
+      "createdAt": "2025-10-03T16:55:00.000Z",
+      "expectedDelivery": "2025-10-07T16:55:00.000Z",
+      "items": [
+        {
+          "id": "ord-0004-item-1",
+          "catalogItem": {
+            "id": "cab-2018",
+            "name": "Gran Reserva Cabernet Sauvignon",
+            "varietal": "Cabernet Sauvignon",
+            "vintage": 2018,
+            "origin": "Napa Valley, USA",
+            "price": 58,
+            "imageUrl": "https://images.unsplash.com/photo-1543248939-ff40856f65d4",
+            "tastingNotes": "Notas de cassis, vainilla y roble tostado con taninos redondos."
+          },
+          "quantity": 10,
+          "unitPrice": 58,
+          "lineTotal": 580
+        }
+      ],
+      "subtotal": 580,
+      "tax": 110.2,
+      "total": 690.2,
+      "customerEmail": "sdfdsfs@f",
+      "notes": "sdvsvsdvsv"
     }
   ]
 }
