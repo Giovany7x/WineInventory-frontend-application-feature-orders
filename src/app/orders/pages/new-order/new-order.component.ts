@@ -1,14 +1,14 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import {Router, RouterModule} from '@angular/router';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { combineLatest } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 
 import { CatalogService } from '../../services/catalog.service';
 import { OrdersService } from '../../services/orders.service';
 import { CatalogItem } from '../../models/catalog-item.entity';
-import { NewOrderInput } from '../../models/order.entity';
+import { NewOrderInput, OrderStatus } from '../../models/order.entity';
 
 interface OrderFormItemValue {
   catalogItemId: string | null;
@@ -19,6 +19,9 @@ interface OrderFormValue {
   customerName: string | null;
   customerEmail: string | null;
   notes: string | null;
+  status: OrderStatus | null;
+  createdAt: string | null;
+  expectedDelivery: string | null;
   items: OrderFormItemValue[] | null;
 }
 
@@ -38,12 +41,45 @@ export class NewOrderComponent implements OnInit {
 
   readonly catalogItems$ = this.catalogService.getCatalog();
 
-  readonly orderForm: FormGroup = this.fb.group({
-    customerName: ['', Validators.required],
-    customerEmail: ['', Validators.email],
-    notes: [''],
-    items: this.fb.array([])
-  });
+  readonly statusLabels: Record<OrderStatus, string> = {
+    pending: 'Pendiente',
+    processing: 'En preparación',
+    completed: 'Completado',
+    cancelled: 'Cancelado'
+  };
+
+  readonly statusOptions: OrderStatus[] = ['pending', 'processing', 'completed', 'cancelled'];
+
+  private readonly deliveryAfterCreationValidator: ValidatorFn = control => {
+    const createdAt = control.get('createdAt')?.value;
+    const expectedDelivery = control.get('expectedDelivery')?.value;
+
+    if (!createdAt || !expectedDelivery) {
+      return null;
+    }
+
+    const createdDate = new Date(createdAt);
+    const deliveryDate = new Date(expectedDelivery);
+
+    if (Number.isNaN(createdDate.getTime()) || Number.isNaN(deliveryDate.getTime())) {
+      return null;
+    }
+
+    return deliveryDate.getTime() >= createdDate.getTime() ? null : { deliveryBeforeCreation: true };
+  };
+
+  readonly orderForm: FormGroup = this.fb.group(
+    {
+      customerName: ['', Validators.required],
+      customerEmail: ['', Validators.email],
+      notes: [''],
+      status: ['pending', Validators.required],
+      createdAt: [this.toDateTimeLocalInput(new Date()), Validators.required],
+      expectedDelivery: [this.toDateTimeLocalInput(this.addDays(new Date(), 4)), Validators.required],
+      items: this.fb.array([])
+    },
+    { validators: this.deliveryAfterCreationValidator }
+  );
 
   readonly orderPreview$ = combineLatest([
     this.catalogItems$,
@@ -85,6 +121,9 @@ export class NewOrderComponent implements OnInit {
       customerName: formValue.customerName!,
       customerEmail: formValue.customerEmail ?? undefined,
       notes: formValue.notes ?? undefined,
+      status: formValue.status!,
+      createdAt: this.toIsoString(formValue.createdAt!),
+      expectedDelivery: this.toIsoString(formValue.expectedDelivery!),
       items: rawItems.map(item => ({
         catalogItemId: item?.catalogItemId!,
         quantity: Number(item?.quantity ?? 1)
@@ -126,5 +165,24 @@ export class NewOrderComponent implements OnInit {
       tax,
       total
     };
+  }
+
+  private addDays(date: Date, days: number): Date {
+    const result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+  }
+
+  private toDateTimeLocalInput(date: Date): string {
+    const pad = (value: number) => value.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  }
+
+  private toIsoString(value: string): string {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      throw new Error('La fecha proporcionada no es válida.');
+    }
+    return date.toISOString();
   }
 }

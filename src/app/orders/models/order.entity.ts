@@ -34,5 +34,8 @@ export interface NewOrderInput {
   customerName: string;
   customerEmail?: string;
   notes?: string;
+  status: OrderStatus;
+  createdAt: string;
+  expectedDelivery: string;
   items: NewOrderItemInput[];
 }

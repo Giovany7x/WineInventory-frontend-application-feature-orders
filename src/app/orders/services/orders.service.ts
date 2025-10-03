@@ -1,13 +1,12 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 
 import { CatalogService } from './catalog.service';
 import { CatalogItem } from '../models/catalog-item.entity';
 import { NewOrderInput, Order, OrderItem, OrderStatus } from '../models/order.entity';
 import { environment } from '../../../environments/environment';
-
-const TAX_RATE = 0.19;
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
@@ -15,6 +14,10 @@ export class OrdersService {
   private readonly catalogService = inject(CatalogService);
   private readonly ordersSubject = new BehaviorSubject<Order[]>([]);
   private readonly ordersEndpoint = `${environment.apiUrl}/orders`;
+  private readonly pendingOrderLoads = new Set<string>();
+
+  private static readonly TAX_RATE = 0.19;
+  private static readonly DEFAULT_DELIVERY_OFFSET_DAYS = 4;
 
   constructor() {
     this.refreshOrders().subscribe();
@@ -25,7 +28,11 @@ export class OrdersService {
   }
 
   getOrderById(orderId: string): Observable<Order | undefined> {
-    return this.ordersSubject.pipe(map(orders => orders.find(order => order.id === orderId)));
+    return this.ordersSubject.pipe(
+      tap(orders => this.ensureOrderLoaded(orderId, orders)),
+      map(orders => orders.find(order => order.id === orderId)),
+      distinctUntilChanged()
+    );
   }
 
   refreshOrders(): Observable<Order[]> {
@@ -38,25 +45,19 @@ export class OrdersService {
   }
 
   createOrder(input: NewOrderInput): Observable<Order> {
-    const orderId = this.generateOrderId();
-    const items = input.items.map((item, index) => this.createOrderItemFromCatalogId(orderId, index, item.catalogItemId, item.quantity));
-    const totals = this.calculateTotals(items);
-    const newOrder: Order = {
-      id: orderId,
-      code: this.generateOrderCode(),
-      customerName: input.customerName,
-      customerEmail: input.customerEmail,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      expectedDelivery: this.computeExpectedDeliveryDate(),
-      notes: input.notes,
-      items,
-      ...totals
-    };
+    let payload: Order;
 
-    return this.http.post<Order>(this.ordersEndpoint, newOrder).pipe(
+    try {
+      payload = this.buildOrderPayload(input, this.catalogService.getCatalogSnapshot());
+    } catch (error) {
+      console.error('No se pudo preparar la orden para guardarla.', error);
+      return throwError(() => (error instanceof Error ? error : new Error('No se pudo preparar la orden.')));
+    }
+
+    return this.http.post<Order>(this.ordersEndpoint, payload).pipe(
+      map(order => ({ ...payload, ...order })),
       tap({
-        next: order => this.ordersSubject.next([...this.ordersSubject.getValue(), order]),
+        next: order => this.upsertOrderInCache(order),
         error: error => console.error('No se pudo crear la orden.', error)
       })
     );
@@ -84,53 +85,230 @@ export class OrdersService {
     );
   }
 
-  private createOrderItem(orderId: string, index: number, catalogItem: CatalogItem, quantity: number): OrderItem {
-    const safeQuantity = Math.max(1, quantity);
-    const unitPrice = catalogItem.price;
-    const lineTotal = unitPrice * safeQuantity;
-
-    return {
-      id: `${orderId}-item-${index + 1}`,
-      catalogItem,
-      quantity: safeQuantity,
-      unitPrice,
-      lineTotal
-    };
-  }
-
-  private createOrderItemFromCatalogId(orderId: string, index: number, catalogItemId: string, quantity: number): OrderItem {
-    const catalogItem = this.catalogService.findById(catalogItemId);
-    if (!catalogItem) {
-      throw new Error(`El artículo con id ${catalogItemId} no existe en el catálogo.`);
+  private ensureOrderLoaded(orderId: string, orders: Order[]): void {
+    const existingOrder = orders.find(order => order.id === orderId);
+    if (this.isOrderComplete(existingOrder)) {
+      return;
     }
 
-    return this.createOrderItem(orderId, index, catalogItem, quantity);
+    this.requestOrderFromServer(orderId);
   }
 
-  private calculateTotals(items: OrderItem[]): Pick<Order, 'subtotal' | 'tax' | 'total'> {
-    const subtotal = items.reduce((acc, item) => acc + item.lineTotal, 0);
-    const tax = Math.round(subtotal * TAX_RATE * 100) / 100;
-    const total = Math.round((subtotal + tax) * 100) / 100;
+  private requestOrderFromServer(orderId: string): void {
+    if (this.pendingOrderLoads.has(orderId)) {
+      return;
+    }
+
+    this.pendingOrderLoads.add(orderId);
+
+    this.http.get<Order>(`${this.ordersEndpoint}/${orderId}`).subscribe({
+      next: order => {
+        this.pendingOrderLoads.delete(orderId);
+        if (order) {
+          this.upsertOrderInCache(order);
+        }
+      },
+      error: error => {
+        console.error('No se pudo cargar la orden solicitada.', error);
+        this.pendingOrderLoads.delete(orderId);
+      }
+    });
+  }
+
+  private upsertOrderInCache(order: Order): void {
+    const orders = this.ordersSubject.getValue();
+    const index = orders.findIndex(existing => existing.id === order.id);
+
+    if (index === -1) {
+      this.ordersSubject.next([...orders, order]);
+      return;
+    }
+
+    const nextOrders = [...orders];
+    nextOrders.splice(index, 1, { ...orders[index], ...order });
+    this.ordersSubject.next(nextOrders);
+  }
+
+  private isOrderComplete(order: Order | undefined): order is Order {
+    if (!order) {
+      return false;
+    }
+
+    const hasItems = Array.isArray(order.items) && order.items.length > 0;
+    const hasTotals = typeof order.subtotal === 'number' && typeof order.total === 'number';
+    const hasCreatedAt = typeof order.createdAt === 'string' && order.createdAt.length > 0;
+
+    return hasItems && hasTotals && hasCreatedAt;
+  }
+
+  private buildOrderPayload(input: NewOrderInput, catalog: CatalogItem[]): Order {
+    if (!input || typeof input !== 'object') {
+      throw new Error('El contenido de la orden no es válido.');
+    }
+
+    if (!Array.isArray(catalog) || catalog.length === 0) {
+      throw new Error('El catálogo de productos no está disponible.');
+    }
+
+    const customerName = (input.customerName || '').trim();
+    if (!customerName) {
+      throw new Error('El nombre del cliente es obligatorio.');
+    }
+
+    const createdAt = this.normalizeDate(input.createdAt);
+    const expectedDelivery = input.expectedDelivery
+      ? this.normalizeDate(input.expectedDelivery)
+      : this.computeExpectedDelivery(createdAt);
+
+    this.ensureDeliveryAfterCreation(createdAt, expectedDelivery);
+
+    const orders = this.ordersSubject.getValue();
+    const id = this.generateOrderId(orders);
+    const code = this.generateOrderCode(orders, createdAt);
+    const status = this.normalizeStatus(input.status);
+    const items = this.buildOrderItems(id, input.items, catalog);
+    const totals = this.calculateTotals(items);
+
+    const order: Order = {
+      id,
+      code,
+      customerName,
+      status,
+      createdAt,
+      expectedDelivery,
+      items,
+      subtotal: totals.subtotal,
+      tax: totals.tax,
+      total: totals.total
+    };
+
+    const email = (input.customerEmail || '').trim();
+    if (email) {
+      order.customerEmail = email;
+    }
+
+    const notes = (input.notes || '').trim();
+    if (notes) {
+      order.notes = notes;
+    }
+
+    return order;
+  }
+
+  private buildOrderItems(orderId: string, rawItems: NewOrderInput['items'], catalog: CatalogItem[]): OrderItem[] {
+    if (!Array.isArray(rawItems) || rawItems.length === 0) {
+      throw new Error('La orden debe incluir al menos un producto.');
+    }
+
+    return rawItems.map((rawItem, index) => {
+      const catalogItem = catalog.find(item => item.id === rawItem.catalogItemId);
+      if (!catalogItem) {
+        throw new Error(`El producto seleccionado no existe en el catálogo (${rawItem.catalogItemId}).`);
+      }
+
+      const quantity = this.normalizeQuantity(rawItem.quantity);
+      const unitPrice = Number(catalogItem.price ?? 0);
+      const lineTotal = this.roundTwo(unitPrice * quantity);
+
+      return {
+        id: `${orderId}-item-${index + 1}`,
+        catalogItem,
+        quantity,
+        unitPrice,
+        lineTotal
+      };
+    });
+  }
+
+  private normalizeQuantity(value: number | undefined): number {
+    const quantity = Number(value ?? 0);
+    if (!Number.isFinite(quantity) || quantity < 1) {
+      return 1;
+    }
+
+    return Math.floor(quantity);
+  }
+
+  private calculateTotals(items: OrderItem[]) {
+    const subtotal = this.roundTwo(items.reduce((acc, item) => acc + item.lineTotal, 0));
+    const tax = this.roundTwo(subtotal * OrdersService.TAX_RATE);
+    const total = this.roundTwo(subtotal + tax);
+
     return { subtotal, tax, total };
   }
 
-  private generateOrderId(): string {
-    return `ord-${Math.random().toString(36).slice(2, 8)}`;
+  private roundTwo(value: number): number {
+    return Math.round(value * 100) / 100;
   }
 
-  private generateOrderCode(): string {
-    const year = new Date().getFullYear();
-    const sequential = (this.ordersSubject.getValue().length + 1).toString().padStart(3, '0');
-    return `WI-${year}-${sequential}`;
+  private normalizeDate(value: string | undefined): string {
+    const target = value ? new Date(value) : new Date();
+    if (Number.isNaN(target.getTime())) {
+      throw new Error('La fecha proporcionada no es válida.');
+    }
+
+    return target.toISOString();
   }
 
-  private computeExpectedDeliveryDate(): string {
-    return this.createFutureDate(4);
+  private computeExpectedDelivery(createdAt: string): string {
+    const delivery = new Date(createdAt);
+    delivery.setDate(delivery.getDate() + OrdersService.DEFAULT_DELIVERY_OFFSET_DAYS);
+    return delivery.toISOString();
   }
 
-  private createFutureDate(daysAhead: number): string {
-    const date = new Date();
-    date.setDate(date.getDate() + daysAhead);
-    return date.toISOString();
+  private ensureDeliveryAfterCreation(createdAt: string, expectedDelivery: string): void {
+    const created = new Date(createdAt);
+    const delivery = new Date(expectedDelivery);
+
+    if (delivery.getTime() < created.getTime()) {
+      throw new Error('La fecha de entrega no puede ser anterior a la fecha de creación.');
+    }
+  }
+
+  private normalizeStatus(status: OrderStatus | undefined): OrderStatus {
+    const allowedStatuses: OrderStatus[] = ['pending', 'processing', 'completed', 'cancelled'];
+    if (!status) {
+      return 'pending';
+    }
+
+    return allowedStatuses.includes(status) ? status : 'pending';
+  }
+
+  private generateOrderId(orders: Order[]): string {
+    const prefix = 'ord-';
+    const sequential = orders
+      .map(order => order.id)
+      .map(id => (typeof id === 'string' && id.startsWith(prefix) ? Number(id.slice(prefix.length)) : Number(id)))
+      .filter(value => Number.isFinite(value)) as number[];
+
+    const next = sequential.length > 0 ? Math.max(...sequential) + 1 : 1;
+    return `${prefix}${next.toString().padStart(4, '0')}`;
+  }
+
+  private generateOrderCode(orders: Order[], createdAt: string): string {
+    const createdDate = new Date(createdAt);
+    const year = createdDate.getFullYear();
+
+    const lastSequential = orders
+      .filter(order => {
+        const orderDate = new Date(order.createdAt);
+        return orderDate.getFullYear() === year;
+      })
+      .map(order => this.extractSequential(order.code))
+      .filter(value => Number.isFinite(value)) as number[];
+
+    const nextSequential = (lastSequential.length > 0 ? Math.max(...lastSequential) + 1 : 1).toString().padStart(3, '0');
+    return `WI-${year}-${nextSequential}`;
+  }
+
+  private extractSequential(code: string | undefined): number {
+    if (typeof code !== 'string') {
+      return NaN;
+    }
+
+    const parts = code.split('-');
+    const rawValue = parts[parts.length - 1];
+    const numeric = Number(rawValue);
+    return Number.isFinite(numeric) ? numeric : NaN;
   }
 }
