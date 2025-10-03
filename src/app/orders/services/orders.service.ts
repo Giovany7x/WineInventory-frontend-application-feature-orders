@@ -3,15 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 
-import { CatalogService } from './catalog.service';
-import { CatalogItem } from '../models/catalog-item.entity';
-import { NewOrderInput, Order, OrderItem, OrderStatus } from '../models/order.entity';
+import { NewOrderInput, Order, OrderStatus } from '../models/order.entity';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   private readonly http = inject(HttpClient);
-  private readonly catalogService = inject(CatalogService);
   private readonly ordersSubject = new BehaviorSubject<Order[]>([]);
   private readonly ordersEndpoint = `${environment.apiUrl}/orders`;
   private readonly pendingOrderLoads = new Set<string>();
