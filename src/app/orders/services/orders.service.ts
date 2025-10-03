@@ -3,12 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { distinctUntilChanged, map, tap } from 'rxjs/operators';
 
-import { NewOrderInput, Order, OrderStatus } from '../models/order.entity';
+import { CatalogItem } from '../models/catalog-item.entity';
+import { NewOrderInput, Order, OrderItem, OrderStatus } from '../models/order.entity';
 import { environment } from '../../../environments/environment';
+import { CatalogService } from './catalog.service';
 
 @Injectable({ providedIn: 'root' })
 export class OrdersService {
   private readonly http = inject(HttpClient);
+  private readonly catalogService = inject(CatalogService);
   private readonly ordersSubject = new BehaviorSubject<Order[]>([]);
   private readonly ordersEndpoint = `${environment.apiUrl}/orders`;
   private readonly pendingOrderLoads = new Set<string>();
@@ -79,6 +82,19 @@ export class OrdersService {
         error: error => console.error('No se pudo actualizar el estado de la orden.', error)
       }),
       map(response => ({ ...updatedOrder, ...response }))
+    );
+  }
+
+  deleteOrder(orderId: string): Observable<void> {
+    return this.http.delete<void>(`${this.ordersEndpoint}/${orderId}`).pipe(
+      tap({
+        next: () => {
+          const orders = this.ordersSubject.getValue();
+          const nextOrders = orders.filter(order => order.id !== orderId);
+          this.ordersSubject.next(nextOrders);
+        },
+        error: error => console.error('No se pudo eliminar la orden.', error)
+      })
     );
   }
 

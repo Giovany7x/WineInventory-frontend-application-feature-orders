@@ -12,6 +12,16 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+### Mock API server
+
+The project includes a JSON Server instance to simulate the backend. Start it from the project root with:
+
+```bash
+npm run mock:server
+```
+
+This command watches `server/db.json` and exposes the API at `http://localhost:3000`. The `routes.json` file keeps the `/api/v1/*` URL structure expected by the application.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

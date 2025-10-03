@@ -1,1 +1,1 @@
-node index.js
+npx json-server --watch db.json --routes routes.json --port 3000
