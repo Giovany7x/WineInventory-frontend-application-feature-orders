@@ -11,23 +11,26 @@
   align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
+  color: black;
 }
 
 .order-detail__header h1 {
   margin: 0;
   font-size: 2rem;
-  color: #2b0a3d;
+  color: black;
 }
 
 .order-detail__header p {
   margin: 0.25rem 0 0;
   color: #6a6a6a;
+
 }
 
 .order-detail__actions {
   display: flex;
   gap: 0.75rem;
   align-items: center;
+  color: black;
 }
 
 .order-detail__actions select {
@@ -40,7 +43,7 @@
   border: none;
   border-radius: 999px;
   padding: 0.6rem 1.4rem;
-  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  background: linear-gradient(135deg, #C81D33, #8e24aa);
   color: #ffffff;
   font-weight: 600;
   cursor: pointer;
@@ -79,11 +82,12 @@
 .order-detail__info h2 {
   margin: 0;
   font-size: 1.2rem;
-  color: #4a148c;
+  color: #C81D33;
 }
 
 .order-detail__customer {
   font-weight: 700;
+  color: black;
 }
 
 .order-detail__notes {
@@ -100,16 +104,18 @@
   box-shadow: 0 18px 36px rgba(108, 55, 140, 0.14);
   padding: 1.5rem;
   overflow-x: auto;
+  color: black;
 }
 
 .order-detail__items h2 {
   margin-top: 0;
-  color: #4a148c;
+  color: #C81D33;
 }
 
 .order-detail__items table {
   width: 100%;
   border-collapse: collapse;
+
 }
 
 .order-detail__items th,
@@ -122,7 +128,7 @@
 .item-name {
   display: block;
   font-weight: 600;
-  color: #4a148c;
+  color: black;
 }
 
 .badge {
@@ -135,7 +141,7 @@
 
 .badge.pending {
   background: rgba(255, 193, 7, 0.18);
-  color: #ff8f00;
+  color: black;
 }
 
 .badge.processing {
@@ -150,7 +156,7 @@
 
 .badge.cancelled {
   background: rgba(244, 67, 54, 0.18);
-  color: #c62828;
+  color: black;
 }
 
 .order-detail__empty {
@@ -165,7 +171,7 @@
 .order-detail__empty a {
   align-self: center;
   text-decoration: none;
-  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  background: linear-gradient(135deg, #C81D33, #8e24aa);
   color: #ffffff;
   padding: 0.75rem 1.5rem;
   border-radius: 999px;

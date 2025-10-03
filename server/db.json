@@ -57,7 +57,7 @@
       "code": "WI-2025-001",
       "customerName": "Restaurante La Vid",
       "customerEmail": "compras@lavid.com",
-      "status": "processing",
+      "status": "completed",
       "createdAt": "2025-02-20T09:30:00.000Z",
       "expectedDelivery": "2025-02-24T09:30:00.000Z",
       "notes": "Entrega en horario matutino.",
@@ -166,47 +166,6 @@
       "subtotal": 840,
       "tax": 159.6,
       "total": 999.6
-    },
-    {
-      "id": "4bc3",
-      "customerName": "dgfdgfdgdfg",
-      "customerEmail": "dfgdfgdfgdfg@gmail.com",
-      "notes": "dgdfgfdgdf",
-      "items": [
-        {
-          "catalogItemId": "cab-2018",
-          "quantity": 10
-        },
-        {
-          "catalogItemId": "mal-2019",
-          "quantity": 3
-        }
-      ],
-      "status": "completed"
-    },
-    {
-      "id": "4cdf",
-      "customerName": "sgsdfgdfg",
-      "customerEmail": "sdgsd@dfdsf",
-      "notes": "sdfsdfdsfsdfsdfssdfsdfsdfsdf",
-      "items": [
-        {
-          "catalogItemId": "cab-2018",
-          "quantity": 5
-        }
-      ]
-    },
-    {
-      "id": "b530",
-      "customerName": "ghdfggdfh",
-      "customerEmail": "hcvh@g",
-      "notes": "xfhcghxfhgdfhd",
-      "items": [
-        {
-          "catalogItemId": "cab-2018",
-          "quantity": 1
-        }
-      ]
     },
     {
       "id": "ord-0004",
