@@ -46,15 +46,62 @@
     "button": "Back to Home"
   },
   "side-navbar": {
-  "title": "Main Menu",
-  "options": {
-    "dashboard": "Home",
-    "wine": "Orders",
-    "order": "Order List",
-    "report": "Reports",
-    "alert": "Alerts",
-    "configuration": "Settings"
+    "title": "Main Menu",
+    "options": {
+      "dashboard": "Home",
+      "wine": "Orders",
+      "order": "Order List",
+      "report": "Reports",
+      "alert": "Alerts",
+      "configuration": "Settings"
+    },
+    "logout": "Log Out"
   },
-  "logout": "Log Out"
-}
+  "orders": {
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "detail": {
+      "header": {
+        "title": "Order {{ code }}",
+        "createdAt": "Created on {{ date }}"
+      },
+      "actions": {
+        "delete": "Delete order",
+        "deleting": "Deleting...",
+        "back": "Back"
+      },
+      "sections": {
+        "customer": "Customer",
+        "delivery": "Delivery",
+        "summary": "Summary",
+        "items": "Products"
+      },
+      "delivery": {
+        "expected": "Estimated date: {{ date }}",
+        "status": "Status:"
+      },
+      "summary": {
+        "subtotal": "Subtotal:",
+        "tax": "Tax:",
+        "total": "Total:"
+      },
+      "table": {
+        "reference": "Reference",
+        "varietal": "Varietal",
+        "vintage": "Vintage",
+        "quantity": "Quantity",
+        "unitPrice": "Unit price",
+        "total": "Total"
+      },
+      "empty": {
+        "title": "Order not found",
+        "description": "The provided identifier does not match any registered order.",
+        "backToList": "Back to list"
+      }
+    }
+  }
 }

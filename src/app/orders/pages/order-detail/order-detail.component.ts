@@ -6,11 +6,12 @@ import { Observable, of } from 'rxjs';
 
 import { OrdersService } from '../../services/orders.service';
 import { Order, OrderStatus } from '../../models/order.entity';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, DatePipe, CurrencyPipe],
+  imports: [CommonModule, RouterModule, DatePipe, CurrencyPipe, TranslateModule],
   templateUrl: './order-detail.component.html',
   styleUrls: ['./order-detail.component.css']
 })
@@ -18,6 +19,8 @@ export class OrderDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly ordersService = inject(OrdersService);
+
+  isDeleting = false;
 
   readonly order$: Observable<Order | null> = this.route.paramMap.pipe(
     switchMap(params => {
@@ -30,10 +33,10 @@ export class OrderDetailComponent {
   );
 
   readonly statusLabels: Record<OrderStatus, string> = {
-    pending: 'Pendiente',
-    processing: 'En preparación',
-    completed: 'Completado',
-    cancelled: 'Cancelado'
+    pending: 'orders.status.pending',
+    processing: 'orders.status.processing',
+    completed: 'orders.status.completed',
+    cancelled: 'orders.status.cancelled'
   };
 
   readonly statusOptions: OrderStatus[] = ['pending', 'processing', 'completed', 'cancelled'];
@@ -44,6 +47,22 @@ export class OrderDetailComponent {
         error: error => console.error('No se pudo actualizar el estado de la orden.', error)
       });
     }
+  }
+
+  deleteOrder(order: Order): void {
+    if (this.isDeleting) {
+      return;
+    }
+
+    this.isDeleting = true;
+
+    this.ordersService.deleteOrder(order.id).subscribe({
+      next: () => this.goBack(),
+      error: error => {
+        this.isDeleting = false;
+        console.error('No se pudo eliminar la orden.', error);
+      }
+    });
   }
 
   goBack(): void {
