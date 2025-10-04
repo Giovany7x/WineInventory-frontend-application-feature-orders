@@ -1,1 +1,17 @@
-<p>plan-benefits works!</p>
+<header class="card__header">
+  <h2>Beneficios del plan Premium</h2>
+  <p>Aprovecha al máximo la versión más completa del sistema.</p>
+</header>
+
+<ng-container *ngIf="benefits?.length; else noBenefits">
+  <ul class="benefits-card__list">
+    <li *ngFor="let benefit of benefits">
+      <span class="material-symbols-outlined">star</span>
+      {{ benefit }}
+    </li>
+  </ul>
+</ng-container>
+
+<ng-template #noBenefits>
+  <p class="benefits-card__empty">Aún no hay beneficios configurados.</p>
+</ng-template>

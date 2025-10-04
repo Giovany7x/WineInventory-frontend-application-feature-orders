@@ -13,6 +13,7 @@ export const routes: Routes = [
   { path: 'sign-in', loadComponent: SignInComponent, data: { title: `${baseTitle} | Sign In` } },
   { path: 'sign-up', loadComponent: SignUpComponent, data: { title: `${baseTitle} | Sign Up` } },
   { path: 'profile', loadComponent: ProfileComponent, data: { title: `${baseTitle} | Profile` } },
+  { path: 'profile/settings', loadComponent: ProfileComponent, data: { title: `${baseTitle} | Profile Settings` } },
   {
     path: 'dashboard',
     loadComponent: DashboardComponent,

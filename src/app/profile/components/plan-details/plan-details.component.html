@@ -1,1 +1,34 @@
-<p>plan-details works!</p>
+<header class="card__header">
+  <h2>Planes</h2>
+  <p>Selecciona el plan que mejor se adapte al crecimiento de tu bodega.</p>
+</header>
+
+<ng-container *ngIf="plans?.length; else emptyState">
+  <div class="plans-card__grid">
+    <button
+      *ngFor="let plan of plans"
+      type="button"
+      class="plan"
+      [class.plan--selected]="plan.id === selectedPlanId"
+      (click)="onSelectPlan(plan.id)"
+      [disabled]="disabled"
+    >
+      <div class="plan__header">
+        <h3>{{ plan.name }}</h3>
+        <span class="plan__price">{{ plan.price }}<small>/mes</small></span>
+      </div>
+      <p class="plan__description">{{ plan.shortDescription }}</p>
+      <ul class="plan__benefits">
+        <li *ngFor="let benefit of plan.benefits">
+          <span class="material-symbols-outlined">check_circle</span>
+          {{ benefit }}
+        </li>
+      </ul>
+      <span class="plan__cta">{{ plan.id === selectedPlanId ? 'Plan actual' : 'Elegir este plan' }}</span>
+    </button>
+  </div>
+</ng-container>
+
+<ng-template #emptyState>
+  <p class="plan-details__empty">No hay planes disponibles en este momento.</p>
+</ng-template>
