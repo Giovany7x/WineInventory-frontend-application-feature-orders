@@ -19,7 +19,8 @@ export const routes: Routes = [
     loadComponent: DashboardComponent,
     children: [
       { path: '', redirectTo: 'sales', pathMatch: 'full' },
-      { path: 'sales', loadChildren: () => import('./orders/orders.routes').then(m => m.ORDERS_ROUTES) }
+      { path: 'sales', loadChildren: () => import('./orders/orders.routes').then(m => m.ORDERS_ROUTES) },
+      { path: 'settings', redirectTo: '/profile/settings', pathMatch: 'full' }
     ]
   },
   { path: '**', loadComponent: PageNotFoundComponent, data: { title: `${baseTitle} | Page Not Found` } }
