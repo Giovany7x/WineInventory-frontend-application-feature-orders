@@ -1,125 +1,138 @@
-import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { finalize, filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-type AccountPlan = {
-  id: string;
-  name: string;
-  price: string;
-  shortDescription: string;
-  benefits: string[];
-};
-
-type AccountStatus = {
-  planName: string;
-  renewalDate: string;
-  supportContact: string;
-  statusLabel: string;
-};
-
-type ProfileFormField =
-  | 'fullName'
-  | 'email'
-  | 'username'
-  | 'currentPassword'
-  | 'newPassword'
-  | 'confirmPassword';
+import { PlanBenefitsComponent } from '../../components/plan-benefits/plan-benefits.component';
+import { PlanDetailsComponent } from '../../components/plan-details/plan-details.component';
+import { ProfileEditComponent, ProfileFormValue } from '../../components/profile-edit/profile-edit.component';
+import { ProfileService } from '../../services/profile.service';
+import { AccountStatus, Profile, ProfileUpdateInput, SubscriptionPlan } from '../../models/profile.entity';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ProfileEditComponent, PlanDetailsComponent, PlanBenefitsComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css'
 })
 export class ProfileComponent {
-  readonly sidebarLinks = [
-    { icon: 'home', label: 'Inicio' },
-    { icon: 'person', label: 'Perfil', active: true },
-    { icon: 'inventory', label: 'Inventario' },
-    { icon: 'shopping_cart', label: 'Pedidos' },
-    { icon: 'bar_chart', label: 'Reportes' },
-    { icon: 'settings', label: 'Ajustes' }
-  ];
+  private readonly profileService = inject(ProfileService);
+  private readonly router = inject(Router);
 
-  readonly userProfile = {
-    fullName: 'Juan Pérez',
-    role: 'Administrador General',
-    email: 'juanperez@email.com',
-    phone: '+52 55 1234 5678',
-    location: 'Ciudad de México, MX'
-  };
+  readonly profile = signal<Profile | null>(null);
+  readonly plans = signal<SubscriptionPlan[]>([]);
+  readonly premiumBenefits = signal<string[]>([]);
+  readonly isLoading = signal(false);
+  readonly isSaving = signal(false);
+  readonly loadError = signal<string | null>(null);
+  readonly updateError = signal<string | null>(null);
+  readonly isSettingsView = signal(false);
 
-  readonly accountStatus: AccountStatus = {
-    planName: 'Plan Premium',
-    renewalDate: '15 Marzo 2025',
-    supportContact: 'soporte@wineinventory.com',
-    statusLabel: 'Activo'
-  };
+  readonly accountStatus = computed<AccountStatus | null>(() => this.profile()?.accountStatus ?? null);
+  readonly selectedPlanId = computed<string | null>(() => this.profile()?.selectedPlanId ?? null);
 
-  readonly plans: AccountPlan[] = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      price: '$0',
-      shortDescription: 'Gestión básica para bodegas pequeñas.',
-      benefits: ['Inventario limitado', 'Reportes básicos', '1 usuario']
-    },
-    {
-      id: 'premium',
-      name: 'Premium',
-      price: '$18',
-      shortDescription: 'Herramientas avanzadas para crecer tu negocio.',
-      benefits: ['Inventario ilimitado', 'Reportes inteligentes', 'Soporte prioritario']
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      price: '$39',
-      shortDescription: 'Automatización total y conexión con ERP.',
-      benefits: ['Integraciones avanzadas', 'Roles personalizados', 'Gerente de cuenta dedicado']
-    }
-  ];
+  constructor() {
+    this.profileService
+      .getProfile()
+      .pipe(takeUntilDestroyed())
+      .subscribe(profile => this.profile.set(profile));
 
-  readonly premiumBenefits = [
-    'Acceso a promociones exclusivas de distribuidores aliados',
-    'Alertas inteligentes sobre stock crítico y rotación de productos',
-    'Paneles personalizados para equipos de ventas y marketing',
-    'Integración directa con herramientas de facturación y CRM',
-    'Soporte prioritario 24/7 con especialistas en enología'
-  ];
+    this.profileService
+      .getPlans()
+      .pipe(takeUntilDestroyed())
+      .subscribe(plans => this.plans.set(plans));
 
-  readonly selectedPlanId = signal<AccountPlan['id']>('premium');
+    this.profileService
+      .getPremiumBenefits()
+      .pipe(takeUntilDestroyed())
+      .subscribe(benefits => this.premiumBenefits.set(benefits));
 
-  readonly profileForm: FormGroup;
+    this.router.events
+      .pipe(
+        takeUntilDestroyed(),
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+      )
+      .subscribe(event => this.evaluateView(event.urlAfterRedirects));
 
-  constructor(private readonly formBuilder: FormBuilder) {
-    this.profileForm = this.formBuilder.group({
-      fullName: [this.userProfile.fullName, [Validators.required, Validators.minLength(3)]],
-      email: [this.userProfile.email, [Validators.required, Validators.email]],
-      username: ['jperez', [Validators.required, Validators.minLength(4)]],
-      currentPassword: ['', [Validators.minLength(6)]],
-      newPassword: ['', [Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.minLength(6)]]
-    });
+    this.evaluateView(this.router.url);
+    this.fetchInitialData();
   }
 
-  selectPlan(planId: AccountPlan['id']): void {
-    this.selectedPlanId.set(planId);
+  fetchInitialData(): void {
+    this.isLoading.set(true);
+    this.loadError.set(null);
+
+    this.profileService
+      .refreshAll()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        error: () => this.loadError.set('No se pudieron cargar los datos del perfil. Intenta nuevamente más tarde.')
+      });
   }
 
-  submitProfileForm(): void {
-    if (this.profileForm.invalid) {
-      this.profileForm.markAllAsTouched();
+  handleProfileSave(formValue: ProfileFormValue): void {
+    this.updateError.set(null);
+    this.isSaving.set(true);
+
+    this.profileService
+      .updateProfile({
+        ...formValue,
+        lastUpdated: new Date().toISOString()
+      })
+      .pipe(finalize(() => this.isSaving.set(false)))
+      .subscribe({
+        error: () =>
+          this.updateError.set('No pudimos guardar tus cambios en este momento. Vuelve a intentarlo más tarde.')
+      });
+  }
+
+  handleCancelEdit(): void {
+    this.updateError.set(null);
+  }
+
+  handlePlanSelected(planId: string): void {
+    if (this.selectedPlanId() === planId) {
       return;
     }
 
-    // TODO: Integrar con el servicio real cuando esté disponible.
-    console.table(this.profileForm.value);
+    const payload = this.buildPlanUpdatePayload(planId);
+    if (!payload) {
+      return;
+    }
+
+    this.updateError.set(null);
+    this.isSaving.set(true);
+
+    this.profileService
+      .updateProfile(payload)
+      .pipe(finalize(() => this.isSaving.set(false)))
+      .subscribe({
+        error: () => this.updateError.set('No fue posible actualizar el plan seleccionado. Intenta nuevamente.')
+      });
   }
 
-  isFieldInvalid(fieldName: ProfileFormField): boolean {
-    const control = this.profileForm.get(fieldName);
-    return !!control && control.invalid && (control.dirty || control.touched);
+  private buildPlanUpdatePayload(planId: string): ProfileUpdateInput | null {
+    const currentProfile = this.profile();
+    if (!currentProfile) {
+      return null;
+    }
+
+    const payload: ProfileUpdateInput = {
+      selectedPlanId: planId,
+      lastUpdated: new Date().toISOString()
+    };
+
+    const nextStatus = this.profileService.buildAccountStatusForPlan(planId);
+    if (nextStatus) {
+      payload.accountStatus = nextStatus;
+    }
+
+    return payload;
+  }
+
+  private evaluateView(url: string): void {
+    this.isSettingsView.set(url.includes('/profile/settings'));
   }
 }
