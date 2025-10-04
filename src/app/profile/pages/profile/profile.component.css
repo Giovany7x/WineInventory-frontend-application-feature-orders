@@ -108,6 +108,31 @@
   color: #c81d33;
 }
 
+.workspace__error {
+  margin: 0;
+  color: #ff9ba8;
+  font-size: 14px;
+}
+
+.workspace__loading,
+.workspace__empty {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 245, 235, 0.82);
+}
+
+.workspace__loading .material-symbols-outlined,
+.workspace__empty .material-symbols-outlined {
+  font-size: 24px;
+  color: #f9be80;
+}
+
 .card {
   background: #ffffff;
   border: 1px solid rgba(31, 31, 31, 0.06);
