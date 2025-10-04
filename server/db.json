@@ -198,5 +198,66 @@
       "customerEmail": "sdfdsfs@f",
       "notes": "sdvsvsdvsv"
     }
+  ],
+  "profiles": [
+    {
+      "id": "current",
+      "fullName": "Juan Pérez",
+      "role": "Administrador General",
+      "email": "juanperez@email.com",
+      "phone": "+52 55 1234 5678",
+      "location": "Ciudad de México, MX",
+      "username": "jperez",
+      "accountStatus": {
+        "planName": "Plan Premium",
+        "renewalDate": "2025-03-15T00:00:00.000Z",
+        "supportContact": "soporte@wineinventory.com",
+        "statusLabel": "Activo"
+      },
+      "selectedPlanId": "premium",
+      "lastUpdated": "2025-02-20T15:30:00.000Z"
+    }
+  ],
+  "subscriptionPlans": [
+    {
+      "id": "starter",
+      "name": "Starter",
+      "price": "$0",
+      "shortDescription": "Gestión básica para bodegas pequeñas.",
+      "benefits": [
+        "Inventario limitado",
+        "Reportes básicos",
+        "1 usuario"
+      ]
+    },
+    {
+      "id": "premium",
+      "name": "Premium",
+      "price": "$18",
+      "shortDescription": "Herramientas avanzadas para crecer tu negocio.",
+      "benefits": [
+        "Inventario ilimitado",
+        "Reportes inteligentes",
+        "Soporte prioritario"
+      ]
+    },
+    {
+      "id": "enterprise",
+      "name": "Enterprise",
+      "price": "$39",
+      "shortDescription": "Automatización total y conexión con ERP.",
+      "benefits": [
+        "Integraciones avanzadas",
+        "Roles personalizados",
+        "Gerente de cuenta dedicado"
+      ]
+    }
+  ],
+  "premiumBenefits": [
+    "Acceso a promociones exclusivas de distribuidores aliados",
+    "Alertas inteligentes sobre stock crítico y rotación de productos",
+    "Paneles personalizados para equipos de ventas y marketing",
+    "Integración directa con herramientas de facturación y CRM",
+    "Soporte prioritario 24/7 con especialistas en enología"
   ]
 }

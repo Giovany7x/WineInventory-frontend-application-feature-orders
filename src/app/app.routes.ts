@@ -13,12 +13,14 @@ export const routes: Routes = [
   { path: 'sign-in', loadComponent: SignInComponent, data: { title: `${baseTitle} | Sign In` } },
   { path: 'sign-up', loadComponent: SignUpComponent, data: { title: `${baseTitle} | Sign Up` } },
   { path: 'profile', loadComponent: ProfileComponent, data: { title: `${baseTitle} | Profile` } },
+  { path: 'profile/settings', loadComponent: ProfileComponent, data: { title: `${baseTitle} | Profile Settings` } },
   {
     path: 'dashboard',
     loadComponent: DashboardComponent,
     children: [
       { path: '', redirectTo: 'sales', pathMatch: 'full' },
-      { path: 'sales', loadChildren: () => import('./orders/orders.routes').then(m => m.ORDERS_ROUTES) }
+      { path: 'sales', loadChildren: () => import('./orders/orders.routes').then(m => m.ORDERS_ROUTES) },
+      { path: 'settings', redirectTo: '/profile/settings', pathMatch: 'full' }
     ]
   },
   { path: '**', loadComponent: PageNotFoundComponent, data: { title: `${baseTitle} | Page Not Found` } }
