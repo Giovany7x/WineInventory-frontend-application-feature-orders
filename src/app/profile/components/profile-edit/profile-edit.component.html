@@ -1,5 +1,17 @@
 <div class="profile-card__user" *ngIf="profile as profileData">
-  <div class="avatar">{{ avatarInitials }}</div>
+  <div class="profile-card__avatar">
+    <ng-container *ngIf="shouldShowAvatarImage; else initialsAvatar">
+      <img
+        class="avatar-image"
+        [src]="profileData.avatarUrl"
+        [alt]="'Foto de ' + profileData.fullName"
+        (error)="handleAvatarError()"
+      />
+    </ng-container>
+    <ng-template #initialsAvatar>
+      <div class="avatar">{{ avatarInitials }}</div>
+    </ng-template>
+  </div>
   <h2>{{ profileData.fullName }}</h2>
   <p class="profile-card__role">{{ profileData.role }}</p>
 

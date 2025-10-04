@@ -13,7 +13,7 @@ export class ProfileService {
   private readonly profileEndpoint = `${environment.apiUrl}/profiles`;
   private readonly plansEndpoint = `${environment.apiUrl}/subscriptionPlans`;
   private readonly benefitsEndpoint = `${environment.apiUrl}/premiumBenefits`;
-  private readonly profileId = 'current';
+  private readonly profileId = 'us-001';
 
   private readonly profileSubject = new BehaviorSubject<Profile | null>(null);
   private readonly plansSubject = new BehaviorSubject<SubscriptionPlan[]>([]);
