@@ -57,7 +57,7 @@
       "code": "WI-2025-001",
       "customerName": "Restaurante La Vid",
       "customerEmail": "compras@lavid.com",
-      "status": "completed",
+      "status": "pending",
       "createdAt": "2025-02-20T09:30:00.000Z",
       "expectedDelivery": "2025-02-24T09:30:00.000Z",
       "notes": "Entrega en horario matutino.",
