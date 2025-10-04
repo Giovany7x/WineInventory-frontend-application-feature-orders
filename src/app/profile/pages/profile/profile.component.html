@@ -1,31 +1,4 @@
 <div class="profile-layout">
-  <aside class="sidebar">
-    <div class="sidebar__brand">
-      <span class="brand__logo">WI</span>
-      <span class="brand__name">WineInventory</span>
-    </div>
-
-    <nav class="sidebar__nav">
-      <a
-        *ngFor="let link of sidebarLinks"
-        class="nav-button"
-        [routerLink]="link.route"
-        routerLinkActive="nav-button--active"
-        [routerLinkActiveOptions]="{ exact: link.exact ?? false }"
-      >
-        <span class="nav-button__icon material-symbols-outlined">{{ link.icon }}</span>
-        <span class="nav-button__label">{{ link.label }}</span>
-      </a>
-    </nav>
-
-    <div class="sidebar__footer">
-      <p class="sidebar__hint" *ngIf="profile()?.lastUpdated as lastUpdated">
-        Actualizado por última vez el {{ lastUpdated | date: 'dd MMMM yyyy, HH:mm' }}
-      </p>
-      <button type="button" class="secondary-button">Cerrar sesión</button>
-    </div>
-  </aside>
-
   <section class="workspace">
     <header class="workspace__header">
       <div class="header__title">

@@ -10,13 +10,6 @@ import { ProfileEditComponent, ProfileFormValue } from '../../components/profile
 import { ProfileService } from '../../services/profile.service';
 import { AccountStatus, Profile, ProfileUpdateInput, SubscriptionPlan } from '../../models/profile.entity';
 
-interface SidebarLink {
-  icon: string;
-  label: string;
-  route: string;
-  exact?: boolean;
-}
-
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -27,15 +20,6 @@ interface SidebarLink {
 export class ProfileComponent {
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
-
-  readonly sidebarLinks: SidebarLink[] = [
-    { icon: 'home', label: 'Inicio', route: '/dashboard' },
-    { icon: 'person', label: 'Perfil', route: '/profile', exact: true },
-    { icon: 'inventory', label: 'Inventario', route: '/inventory' },
-    { icon: 'shopping_cart', label: 'Pedidos', route: '/dashboard/sales' },
-    { icon: 'bar_chart', label: 'Reportes', route: '/reporting' },
-    { icon: 'settings', label: 'Ajustes', route: '/profile/settings' }
-  ];
 
   readonly profile = signal<Profile | null>(null);
   readonly plans = signal<SubscriptionPlan[]>([]);
