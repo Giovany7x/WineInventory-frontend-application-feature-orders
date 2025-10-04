@@ -1,1 +1,182 @@
-<p>profile works!</p>
+<div class="profile-layout">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <span class="brand__logo">WI</span>
+      <span class="brand__name">WineInventory</span>
+    </div>
+    <nav class="sidebar__nav">
+      <button
+        *ngFor="let link of sidebarLinks"
+        type="button"
+        class="nav-button"
+        [class.nav-button--active]="link.active"
+      >
+        <span class="nav-button__icon material-symbols-outlined">{{ link.icon }}</span>
+        <span class="nav-button__label">{{ link.label }}</span>
+      </button>
+    </nav>
+    <div class="sidebar__footer">
+      <p class="sidebar__hint">Actualizado hace 5 min</p>
+      <button type="button" class="secondary-button">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <section class="workspace">
+    <header class="workspace__header">
+      <div class="header__title">
+        <div class="header__icon material-symbols-outlined">badge</div>
+        <div>
+          <h1>Perfil</h1>
+          <p>Gestiona tu información personal, credenciales y plan de suscripción.</p>
+        </div>
+      </div>
+      <div class="header__status-chip">
+        <span class="material-symbols-outlined">verified</span>
+        Cuenta verificada
+      </div>
+    </header>
+
+    <div class="workspace__grid">
+      <article class="card profile-card">
+        <div class="profile-card__user">
+          <div class="avatar">JP</div>
+          <h2>{{ userProfile.fullName }}</h2>
+          <p class="profile-card__role">{{ userProfile.role }}</p>
+          <dl class="profile-card__details">
+            <div>
+              <dt class="material-symbols-outlined">mail</dt>
+              <dd>{{ userProfile.email }}</dd>
+            </div>
+            <div>
+              <dt class="material-symbols-outlined">call</dt>
+              <dd>{{ userProfile.phone }}</dd>
+            </div>
+            <div>
+              <dt class="material-symbols-outlined">location_on</dt>
+              <dd>{{ userProfile.location }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <form class="profile-card__form" [formGroup]="profileForm" (ngSubmit)="submitProfileForm()">
+          <div class="form-field" [class.form-field--error]="isFieldInvalid('fullName')">
+            <label for="fullName">Nombre</label>
+            <input id="fullName" type="text" formControlName="fullName" placeholder="Ingresa tu nombre completo" />
+            <span class="field-error" *ngIf="isFieldInvalid('fullName')">
+              Debe contener al menos 3 caracteres.
+            </span>
+          </div>
+
+          <div class="form-field" [class.form-field--error]="isFieldInvalid('email')">
+            <label for="email">Correo electrónico</label>
+            <input id="email" type="email" formControlName="email" placeholder="correo@empresa.com" />
+            <span class="field-error" *ngIf="isFieldInvalid('email')">
+              Ingresa un correo electrónico válido.
+            </span>
+          </div>
+
+          <div class="form-field" [class.form-field--error]="isFieldInvalid('username')">
+            <label for="username">Nombre de usuario</label>
+            <input id="username" type="text" formControlName="username" placeholder="usuario" />
+            <span class="field-error" *ngIf="isFieldInvalid('username')">
+              Debe contener al menos 4 caracteres.
+            </span>
+          </div>
+
+          <div class="form-field password-group" [class.form-field--error]="isFieldInvalid('currentPassword')">
+            <label for="currentPassword">Contraseña actual</label>
+            <input id="currentPassword" type="password" formControlName="currentPassword" placeholder="••••••" />
+            <span class="field-error" *ngIf="isFieldInvalid('currentPassword')">
+              La contraseña debe tener al menos 6 caracteres.
+            </span>
+          </div>
+
+          <div class="form-field password-group" [class.form-field--error]="isFieldInvalid('newPassword')">
+            <label for="newPassword">Nueva contraseña</label>
+            <input id="newPassword" type="password" formControlName="newPassword" placeholder="••••••" />
+            <span class="field-error" *ngIf="isFieldInvalid('newPassword')">
+              La contraseña debe tener al menos 6 caracteres.
+            </span>
+          </div>
+
+          <div class="form-field password-group" [class.form-field--error]="isFieldInvalid('confirmPassword')">
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="••••••" />
+            <span class="field-error" *ngIf="isFieldInvalid('confirmPassword')">
+              La contraseña debe tener al menos 6 caracteres.
+            </span>
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="secondary-button">Cancelar</button>
+            <button type="submit" class="primary-button">Guardar cambios</button>
+          </div>
+        </form>
+      </article>
+
+      <article class="card account-card">
+        <header class="card__header">
+          <h2>Tipo de cuenta</h2>
+          <span class="status-chip status-chip--active">
+            <span class="material-symbols-outlined">workspace_premium</span>
+            {{ accountStatus.statusLabel }}
+          </span>
+        </header>
+        <div class="account-card__body">
+          <p class="account-card__plan">{{ accountStatus.planName }}</p>
+          <p class="account-card__subtitle">Tu plan se renovará automáticamente el {{ accountStatus.renewalDate }}.</p>
+          <div class="account-card__actions">
+            <button type="button" class="primary-button">Actualizar plan</button>
+            <button type="button" class="ghost-button">Contactar soporte</button>
+          </div>
+          <p class="account-card__support">
+            ¿Necesitas ayuda? Escríbenos a
+            <a href="mailto:{{ accountStatus.supportContact }}">{{ accountStatus.supportContact }}</a>.
+          </p>
+        </div>
+      </article>
+
+      <article class="card plans-card">
+        <header class="card__header">
+          <h2>Planes</h2>
+          <p>Selecciona el plan que mejor se adapte al crecimiento de tu bodega.</p>
+        </header>
+        <div class="plans-card__grid">
+          <button
+            *ngFor="let plan of plans"
+            type="button"
+            class="plan"
+            [class.plan--selected]="selectedPlanId() === plan.id"
+            (click)="selectPlan(plan.id)"
+          >
+            <div class="plan__header">
+              <h3>{{ plan.name }}</h3>
+              <span class="plan__price">{{ plan.price }}<small>/mes</small></span>
+            </div>
+            <p class="plan__description">{{ plan.shortDescription }}</p>
+            <ul class="plan__benefits">
+              <li *ngFor="let benefit of plan.benefits">
+                <span class="material-symbols-outlined">check_circle</span>
+                {{ benefit }}
+              </li>
+            </ul>
+            <span class="plan__cta">Elegir este plan</span>
+          </button>
+        </div>
+      </article>
+
+      <article class="card benefits-card">
+        <header class="card__header">
+          <h2>Beneficios del Plan Premium</h2>
+          <p>Aprovecha al máximo la versión más completa del sistema.</p>
+        </header>
+        <ul class="benefits-card__list">
+          <li *ngFor="let benefit of premiumBenefits">
+            <span class="material-symbols-outlined">star</span>
+            {{ benefit }}
+          </li>
+        </ul>
+      </article>
+    </div>
+  </section>
+</div>
