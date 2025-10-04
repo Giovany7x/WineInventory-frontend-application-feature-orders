@@ -13,6 +13,7 @@ export interface Profile {
   phone: string;
   location: string;
   username: string;
+  avatarUrl?: string;
   accountStatus: AccountStatus;
   selectedPlanId: string;
   lastUpdated?: string;
@@ -32,6 +33,7 @@ export interface ProfileUpdateInput {
   username?: string;
   phone?: string;
   location?: string;
+  avatarUrl?: string;
   accountStatus?: Partial<AccountStatus>;
   selectedPlanId?: string;
   lastUpdated?: string;

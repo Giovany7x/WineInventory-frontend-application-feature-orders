@@ -31,6 +31,7 @@ export class ProfileEditComponent implements OnChanges {
   @Output() cancelEdit = new EventEmitter<void>();
 
   private readonly formBuilder = inject(FormBuilder);
+  private avatarHasError = false;
 
   readonly profileForm: FormGroup = this.formBuilder.group({
     fullName: ['', [Validators.required, Validators.minLength(3)]],
@@ -45,6 +46,7 @@ export class ProfileEditComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['profile'] && this.profile) {
+      this.avatarHasError = false;
       this.patchFormWithProfile(this.profile);
     }
   }
@@ -86,6 +88,14 @@ export class ProfileEditComponent implements OnChanges {
       phone: profile.phone,
       location: profile.location
     });
+  }
+
+  handleAvatarError(): void {
+    this.avatarHasError = true;
+  }
+
+  get shouldShowAvatarImage(): boolean {
+    return !!this.profile?.avatarUrl && !this.avatarHasError;
   }
 
   private computeInitials(fullName: string): string {
