@@ -202,20 +202,20 @@
   "profiles": [
     {
       "id": "current",
-      "fullName": "Juan Pérez",
+      "fullName": "Pepe Lopez",
       "role": "Administrador General",
       "email": "juanperez@email.com",
       "phone": "+52 55 1234 5678",
       "location": "Ciudad de México, MX",
       "username": "jperez",
       "accountStatus": {
-        "planName": "Plan Premium",
+        "planName": "Enterprise",
         "renewalDate": "2025-03-15T00:00:00.000Z",
         "supportContact": "soporte@wineinventory.com",
         "statusLabel": "Activo"
       },
-      "selectedPlanId": "premium",
-      "lastUpdated": "2025-10-04T21:46:15.006Z"
+      "selectedPlanId": "enterprise",
+      "lastUpdated": "2025-10-04T22:30:23.933Z"
     }
   ],
   "subscriptionPlans": [
