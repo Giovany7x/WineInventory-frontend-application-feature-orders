@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
-import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { finalize, filter } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -20,6 +20,7 @@ import { AccountStatus, Profile, ProfileUpdateInput, SubscriptionPlan } from '..
 export class ProfileComponent {
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   readonly profile = signal<Profile | null>(null);
   readonly plans = signal<SubscriptionPlan[]>([]);
@@ -29,6 +30,7 @@ export class ProfileComponent {
   readonly loadError = signal<string | null>(null);
   readonly updateError = signal<string | null>(null);
   readonly isSettingsView = signal(false);
+  readonly overviewAvatarError = signal(false);
 
   readonly accountStatus = computed<AccountStatus | null>(() => this.profile()?.accountStatus ?? null);
   readonly selectedPlanId = computed<string | null>(() => this.profile()?.selectedPlanId ?? null);
@@ -37,7 +39,10 @@ export class ProfileComponent {
     this.profileService
       .getProfile()
       .pipe(takeUntilDestroyed())
-      .subscribe(profile => this.profile.set(profile));
+      .subscribe(profile => {
+        this.profile.set(profile);
+        this.overviewAvatarError.set(false);
+      });
 
     this.profileService
       .getPlans()
@@ -83,6 +88,7 @@ export class ProfileComponent {
       })
       .pipe(finalize(() => this.isSaving.set(false)))
       .subscribe({
+        next: () => this.goToProfile(),
         error: () =>
           this.updateError.set('No pudimos guardar tus cambios en este momento. Vuelve a intentarlo más tarde.')
       });
@@ -90,6 +96,7 @@ export class ProfileComponent {
 
   handleCancelEdit(): void {
     this.updateError.set(null);
+    this.goToProfile();
   }
 
   handlePlanSelected(planId: string): void {
@@ -134,5 +141,36 @@ export class ProfileComponent {
 
   private evaluateView(url: string): void {
     this.isSettingsView.set(url.includes('/profile/settings'));
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['settings'], { relativeTo: this.route }).catch(() => {
+      // ignore navigation errors
+    });
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['../'], { relativeTo: this.route }).catch(() => {
+      // ignore navigation errors
+    });
+  }
+
+  computeInitials(fullName: string): string {
+    if (!fullName) {
+      return 'US';
+    }
+
+    const initials = fullName
+      .split(' ')
+      .filter(part => part.trim().length > 0)
+      .slice(0, 2)
+      .map(part => part.trim().charAt(0).toUpperCase())
+      .join('');
+
+    return initials || fullName.charAt(0).toUpperCase();
+  }
+
+  handleOverviewAvatarError(): void {
+    this.overviewAvatarError.set(true);
   }
 }
