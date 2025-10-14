@@ -1,0 +1,21 @@
+<mat-card class="task-kpi-card" aria-live="polite">
+  <mat-card-header>
+    <div mat-card-avatar class="task-kpi-card__avatar"></div>
+    <mat-card-title>{{ model }}</mat-card-title>
+    <mat-card-subtitle>{{ 'workato.home.taskAnalytics.modelLabel' | translate }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="task-kpi-card__stat">
+      <span class="task-kpi-card__label">{{ 'workato.home.taskAnalytics.completionRate' | translate }}</span>
+      <span class="task-kpi-card__value">{{ completionRate }}</span>
+    </div>
+    <div class="task-kpi-card__stat">
+      <span class="task-kpi-card__label">{{ 'workato.home.taskAnalytics.tokenEfficiency' | translate }}</span>
+      <span class="task-kpi-card__value">{{ tokenEfficiency }}</span>
+    </div>
+  </mat-card-content>
+  <mat-card-actions align="end" class="task-kpi-card__actions">
+    <span class="task-kpi-card__label">{{ 'workato.home.taskAnalytics.openBacklog' | translate }}</span>
+    <span class="task-kpi-card__value" [attr.aria-label]="('workato.home.taskAnalytics.openBacklog' | translate)">{{ openBacklog }}</span>
+  </mat-card-actions>
+</mat-card>

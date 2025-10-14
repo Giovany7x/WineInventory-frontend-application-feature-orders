@@ -1,0 +1,25 @@
+<section class="home-page">
+  <header class="home-page__header">
+    <h1>{{ 'workato.home.title' | translate }}</h1>
+    <p>{{ 'workato.home.welcome' | translate }}</p>
+  </header>
+
+  <section class="home-page__analytics" [attr.aria-label]="('workato.home.taskAnalytics.title' | translate)">
+    <h2>{{ 'workato.home.taskAnalytics.title' | translate }}</h2>
+    <mat-grid-list cols="2" rowHeight="1:1" gutterSize="16" class="home-page__grid" *ngIf="viewModel$ | async as viewModel">
+      <mat-grid-tile *ngFor="let metric of viewModel.analytics">
+        <app-workato-task-kpi
+          [model]="metric.model"
+          [completionRate]="metric.completionRate"
+          [tokenEfficiency]="metric.tokenEfficiency"
+          [openBacklog]="metric.openBacklog">
+        </app-workato-task-kpi>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </section>
+
+  <section class="home-page__next-task" *ngIf="viewModel$ | async as viewModel" [attr.aria-label]="('workato.home.nextTask.title' | translate)">
+    <h2>{{ 'workato.home.nextTask.title' | translate }}</h2>
+    <app-workato-next-task-card [task]="viewModel.nextTask"></app-workato-next-task-card>
+  </section>
+</section>

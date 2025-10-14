@@ -1,0 +1,29 @@
+<mat-toolbar color="primary" class="workato-toolbar">
+  <div class="workato-toolbar__branding" aria-label="Workato logo and title">
+    <img
+      class="workato-toolbar__logo"
+      src="https://img.logo.dev/workato.com?token=pk_LI1R7Jc42kApY7Aj9sY2pw"
+      alt="Workato logo"
+      width="40"
+      height="40"
+      loading="lazy"
+    />
+    <span class="workato-toolbar__title">{{ 'workato.toolbar.title' | translate }}</span>
+  </div>
+
+  <nav class="workato-toolbar__nav" [attr.aria-label]="('workato.toolbar.navigationAria' | translate)">
+    <a mat-button routerLink="/home" routerLinkActive="workato-toolbar__link--active">{{ 'workato.toolbar.home' | translate }}</a>
+    <a mat-button routerLink="/agents/tasks/new" routerLinkActive="workato-toolbar__link--active">{{ 'workato.toolbar.newTask' | translate }}</a>
+  </nav>
+
+  <div class="workato-toolbar__language-switcher">
+    <app-workato-language-switcher
+      [activeLanguage]="activeLanguage()"
+      (languageChange)="onLanguageSelected($event)">
+    </app-workato-language-switcher>
+  </div>
+</mat-toolbar>
+
+<main class="workato-shell__content">
+  <router-outlet></router-outlet>
+</main>
