@@ -12,7 +12,7 @@ import {RouterOutlet} from '@angular/router';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  public readonly title = signal('WineInventory');
+  public readonly title = signal('Workato');
   private translate: TranslateService;
 
   constructor() {

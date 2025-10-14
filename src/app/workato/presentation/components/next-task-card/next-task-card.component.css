@@ -1,0 +1,28 @@
+.next-task-card {
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(77, 182, 172, 0.16) 0%, rgba(0, 150, 136, 0.12) 100%);
+}
+
+.next-task-card__row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.next-task-card__label {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.next-task-card__value {
+  font-weight: 600;
+  color: #00695c;
+  text-align: right;
+}
+
+.next-task-card__empty {
+  margin: 0;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}

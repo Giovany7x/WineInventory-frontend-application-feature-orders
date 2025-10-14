@@ -1,0 +1,7 @@
+<mat-button-toggle-group
+  [value]="activeLanguage"
+  (valueChange)="onLanguageChange($event)"
+  [attr.aria-label]="('workato.toolbar.languageSwitcherAria' | translate)">
+  <mat-button-toggle value="en">EN</mat-button-toggle>
+  <mat-button-toggle value="es">ES</mat-button-toggle>
+</mat-button-toggle-group>

@@ -103,5 +103,65 @@
         "backToList": "Volver al listado"
       }
     }
+  },
+  "workato": {
+    "toolbar": {
+      "title": "Plataforma de Orquestación Inteligente Workato",
+      "home": "Inicio",
+      "newTask": "Nueva Tarea",
+      "navigationAria": "Navegación principal",
+      "languageSwitcherAria": "Cambiar idioma de la interfaz"
+    },
+    "home": {
+      "title": "Inicio",
+      "welcome": "Bienvenido a Workato",
+      "taskAnalytics": {
+        "title": "Analítica de Tareas",
+        "modelLabel": "Modelo",
+        "completionRate": "Tasa de Finalización",
+        "tokenEfficiency": "Eficiencia de Tokens",
+        "openBacklog": "Backlog Abierto"
+      },
+      "nextTask": {
+        "title": "Próxima Tarea",
+        "placeholder": "Esperando la siguiente asignación",
+        "description": "Descripción",
+        "agent": "Agente",
+        "crew": "Crew",
+        "tokens": "Tokens Estimados",
+        "registeredAt": "Registrada",
+        "empty": "No se encontraron tareas pendientes"
+      }
+    },
+    "newTask": {
+      "title": "Nueva Tarea",
+      "subtitle": "Registrar una Tarea",
+      "fields": {
+        "crew": "Crew",
+        "agent": "Agente",
+        "description": "Descripción",
+        "estimatedTokens": "Tokens Estimados"
+      },
+      "actions": {
+        "create": "Crear",
+        "cancel": "Cancelar"
+      },
+      "validation": {
+        "required": "Este campo es obligatorio",
+        "min": "Ingrese al menos 1 token"
+      },
+      "success": "Tarea creada correctamente",
+      "errors": {
+        "crewNotActive": "El crew no está activo",
+        "tokensExceeded": "Los tokens estimados superan el límite del agente",
+        "agentLimit": "El agente ya tiene una tarea registrada hoy",
+        "generic": "No se pudo crear la tarea"
+      }
+    },
+    "notFound": {
+      "title": "No encontramos esa página",
+      "message": "La ruta \"{{ path }}\" no está disponible.",
+      "backToHome": "Volver al Inicio"
+    }
   }
 }

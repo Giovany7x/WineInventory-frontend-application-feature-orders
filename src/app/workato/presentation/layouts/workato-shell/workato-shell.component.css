@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5fbff 0%, #e8f0ff 100%);
+}
+
+.workato-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 32px;
+}
+
+.workato-toolbar__branding {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.workato-toolbar__logo {
+  border-radius: 8px;
+  background-color: white;
+  padding: 4px;
+}
+
+.workato-toolbar__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  max-width: 260px;
+}
+
+.workato-toolbar__nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 auto;
+}
+
+.workato-toolbar__nav a {
+  color: white;
+  border-radius: 999px;
+  padding: 6px 18px;
+}
+
+.workato-toolbar__link--active {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+
+.workato-toolbar__language-switcher {
+  display: flex;
+  align-items: center;
+}
+
+.workato-shell__content {
+  padding: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .workato-toolbar {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+
+  .workato-toolbar__title {
+    max-width: unset;
+  }
+
+  .workato-toolbar__nav {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .workato-shell__content {
+    padding: 16px;
+  }
+}

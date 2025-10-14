@@ -5,19 +5,14 @@ html, body {
 }
 
 body {
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-  background: #3A1E2A;
-  background: linear-gradient(135deg, #3A1E2A 0%, #2C2129 100%);
-  color: #FEEED4;
+  font-family: 'Roboto', 'Helvetica Neue', sans-serif;
+  background: linear-gradient(135deg, #f5fbff 0%, #e3f2fd 100%);
+  color: #0d1b2a;
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  background-attachment: fixed;
 }
 
-.container-with-spacing {
-  margin: 10px;
+a {
+  text-decoration: none;
 }
 
 .mat-spacer {

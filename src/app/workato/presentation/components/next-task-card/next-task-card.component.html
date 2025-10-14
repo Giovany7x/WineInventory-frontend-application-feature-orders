@@ -1,0 +1,33 @@
+<mat-card class="next-task-card">
+  <mat-card-header>
+    <mat-card-title>{{ 'workato.home.nextTask.title' | translate }}</mat-card-title>
+    <mat-card-subtitle>{{ task ? task.title : ('workato.home.nextTask.placeholder' | translate) }}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <ng-container *ngIf="task; else emptyState">
+      <div class="next-task-card__row">
+        <span class="next-task-card__label">{{ 'workato.home.nextTask.description' | translate }}</span>
+        <span class="next-task-card__value">{{ task.description }}</span>
+      </div>
+      <div class="next-task-card__row">
+        <span class="next-task-card__label">{{ 'workato.home.nextTask.agent' | translate }}</span>
+        <span class="next-task-card__value">{{ task.agentName }}</span>
+      </div>
+      <div class="next-task-card__row">
+        <span class="next-task-card__label">{{ 'workato.home.nextTask.crew' | translate }}</span>
+        <span class="next-task-card__value">{{ task.crewName }}</span>
+      </div>
+      <div class="next-task-card__row">
+        <span class="next-task-card__label">{{ 'workato.home.nextTask.tokens' | translate }}</span>
+        <span class="next-task-card__value">{{ task.estimatedTokens }}</span>
+      </div>
+      <div class="next-task-card__row">
+        <span class="next-task-card__label">{{ 'workato.home.nextTask.registeredAt' | translate }}</span>
+        <span class="next-task-card__value">{{ task.registeredAt | date:'medium' }}</span>
+      </div>
+    </ng-container>
+    <ng-template #emptyState>
+      <p class="next-task-card__empty" aria-live="polite">{{ 'workato.home.nextTask.empty' | translate }}</p>
+    </ng-template>
+  </mat-card-content>
+</mat-card>

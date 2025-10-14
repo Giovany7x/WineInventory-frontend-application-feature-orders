@@ -1,0 +1,8 @@
+:host {
+  display: inline-flex;
+}
+
+mat-button-toggle-group {
+  border-radius: 999px;
+  overflow: hidden;
+}

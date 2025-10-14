@@ -103,5 +103,65 @@
         "backToList": "Back to list"
       }
     }
+  },
+  "workato": {
+    "toolbar": {
+      "title": "Workato Intelligent Orchestration Platform",
+      "home": "Home",
+      "newTask": "New Task",
+      "navigationAria": "Main navigation",
+      "languageSwitcherAria": "Switch interface language"
+    },
+    "home": {
+      "title": "Home",
+      "welcome": "Welcome to Workato",
+      "taskAnalytics": {
+        "title": "Task Analytics",
+        "modelLabel": "Model",
+        "completionRate": "Completion Rate",
+        "tokenEfficiency": "Token Efficiency",
+        "openBacklog": "Open Backlog"
+      },
+      "nextTask": {
+        "title": "Next Task",
+        "placeholder": "Awaiting next assignment",
+        "description": "Description",
+        "agent": "Agent",
+        "crew": "Crew",
+        "tokens": "Estimated Tokens",
+        "registeredAt": "Registered",
+        "empty": "No pending tasks found"
+      }
+    },
+    "newTask": {
+      "title": "New Task",
+      "subtitle": "Add a Task Record",
+      "fields": {
+        "crew": "Crew",
+        "agent": "Agent",
+        "description": "Description",
+        "estimatedTokens": "Estimated Tokens"
+      },
+      "actions": {
+        "create": "Create",
+        "cancel": "Cancel"
+      },
+      "validation": {
+        "required": "This field is required",
+        "min": "Please enter at least 1 token"
+      },
+      "success": "Task created successfully",
+      "errors": {
+        "crewNotActive": "Crew is not active",
+        "tokensExceeded": "Estimated tokens exceed agent limit",
+        "agentLimit": "Agent already has a task today",
+        "generic": "Unable to create the task"
+      }
+    },
+    "notFound": {
+      "title": "We could not find that page",
+      "message": "The path \"{{ path }}\" is not available.",
+      "backToHome": "Return to Home"
+    }
   }
 }
